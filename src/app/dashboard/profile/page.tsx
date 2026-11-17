@@ -18,7 +18,7 @@ export default function Profile() {
  <Card>
  <p className="text-sm text-slate-600"><strong>Name:</strong> {session?.name}</p>
  <p className="mt-1 text-sm text-slate-600"><strong>Email:</strong> {session?.email}</p>
- <p className="mt-1 text-sm text-slate-600"><strong>Activation:</strong> {p.activated ? "Activated" : "Not activated"} · <strong>Payment status:</strong> {p.paymentStatus}</p>
+ <p className="mt-1 text-sm text-slate-600"><strong>Activation:</strong> {p.activated ? "Activated" : "Not activated"}</p>
  <p className="mt-1 text-sm text-slate-600"><strong>Topics completed:</strong> {p.completedTopics.length} · <strong>Certificates:</strong> {p.certificates.length}</p>
  <div className="mt-4">
  <label className="block text-sm font-semibold text-navy" htmlFor="name">Update display name</label>

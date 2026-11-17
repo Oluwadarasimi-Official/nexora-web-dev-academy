@@ -62,23 +62,8 @@ export type AdminStudent = {
   suspension_reason: string | null;
   current_level: number;
   created_at: string;
-  paymentStatus: string;
   completedTopics: number;
   certificates: number;
-};
-
-export type AdminPayment = {
-  id: string;
-  student_id: string;
-  student_name: string;
-  student_email: string;
-  reference: string;
-  evidence_note: string;
-  amount_text: string | null;
-  status: string;
-  review_note: string | null;
-  reviewed_at: string | null;
-  created_at: string;
 };
 
 export type AdminCode = {

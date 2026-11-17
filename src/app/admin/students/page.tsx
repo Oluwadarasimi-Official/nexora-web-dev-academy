@@ -98,7 +98,7 @@ export default function Page() {
                   </p>
                   <p className="text-sm text-slate-600">{s.email}</p>
                   <p className="mt-1 text-sm text-slate-600">
-                    Level {s.current_level} · {LEVEL_NAMES[s.current_level] ?? ""} · {s.completedTopics} / 73 topics · {s.certificates} certificate{s.certificates === 1 ? "" : "s"} · Payment: {s.paymentStatus}
+                    Level {s.current_level} · {LEVEL_NAMES[s.current_level] ?? ""} · {s.completedTopics} / 73 topics · {s.certificates} certificate{s.certificates === 1 ? "" : "s"}
                   </p>
                   {s.suspended && s.suspension_reason && (
                     <p className="mt-1 text-sm text-red-700">Reason: {s.suspension_reason}</p>

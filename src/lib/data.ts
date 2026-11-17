@@ -11,8 +11,8 @@ export const PASS_MARK = 7;
 
 export const FAQS = [
   { q: "Who can enrol?", a: "Anyone who wants to learn web development from the beginning. No prior coding experience is required for the Beginner level." },
-  { q: "How do I pay?", a: "Payment is made outside this platform. Contact the academy on WhatsApp (+234 813 938 8562), follow the payment method the academy communicates, then submit your payment reference here. An administrator verifies it before your access code is released." },
-  { q: "How do access codes work?", a: "After your payment is approved, an administrator assigns you one single-use access code. You redeem it once on the activation screen. Each code works for one student only and cannot be reused." },
+  { q: "How do I pay?", a: "Payment is made outside this platform. Contact the academy on WhatsApp (+234 813 938 8562), follow the payment method the academy communicates, and the owner will give you your access code." },
+  { q: "How do access codes work?", a: "After you pay on WhatsApp, the owner gives you one single-use access code. You redeem it once on the activation screen and your lessons unlock instantly. Each code works for one student only and cannot be reused." },
   { q: "How many topics can I study per day?", a: "Three new topics per calendar day (Africa/Lagos time). Topics you have already completed can be revised any time without using your daily allowance." },
   { q: "What do I need to pass a topic?", a: "Complete the lesson and score at least 7 out of 10 (70%) in the topic quiz. A failed quiz does not complete the topic — you may try again." },
   { q: "How do I earn a certificate?", a: "Complete every topic and quiz in a level, pass that level's final examination (objective + theory, 70% pass mark), and your certificate for that level is issued. There is one certificate per level: Certificate of Completion (Beginner), Certificate of Achievement (Intermediate), and Advanced Web Development Certification (Advanced)." },

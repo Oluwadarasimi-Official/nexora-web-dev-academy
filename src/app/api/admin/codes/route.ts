@@ -65,8 +65,10 @@ export async function GET(req: Request) {
   }
 }
 
-// POST /api/admin/codes — assign or revoke an access code. Admin only.
-// Assign only after a payment is approved. Full codes are never returned.
+// POST /api/admin/codes — mark a code as given, or revoke it. Admin only.
+// "Assign" is record-keeping only: it notes which student a code was handed
+// to on WhatsApp. Any unused code redeems for any student (migration 005);
+// assignment never gates redemption. Full codes are never returned.
 export async function POST(req: Request) {
   const guard = await requireAdmin(req);
   if ("error" in guard) return guard.error;

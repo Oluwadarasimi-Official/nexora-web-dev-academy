@@ -16,8 +16,8 @@ const CHAPTERS = ["Chapter One", "Chapter Two", "Chapter Three"];
 const STEPS: [string, string][] = [
  ["Register", "Make your student account — name, email, password. Two minutes, and no payment happens here."],
  ["Pay on WhatsApp", "Chat with the academy on WhatsApp and pay the way they tell you. This site never touches your money."],
- ["Send your reference", "Drop your payment reference in your dashboard. A real person checks it — not a machine."],
- ["Redeem your code", "Once approved, you get one single-use code. Enter it once and the lessons open."],
+ ["Get your code", "Once you've paid, the owner gives you one single-use access code on WhatsApp."],
+ ["Redeem your code", "Enter your code once in your dashboard and your lessons open instantly."],
 ];
 
 const RULES: [string, string][] = [

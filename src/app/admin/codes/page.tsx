@@ -57,7 +57,7 @@ export default function Page() {
     try {
       await adminPost("/api/admin/codes", { action: "assign", codeId: assignCode, studentId: assignStudent });
       const name = students.find((s) => s.id === assignStudent)?.full_name ?? "the student";
-      setMsg(`Access code assigned to ${name}.`);
+      setMsg(`Code marked as given to ${name}.`);
       setAssignStudent("");
       setAssignCode("");
       await load();
@@ -96,11 +96,11 @@ export default function Page() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card><p className="text-xs uppercase tracking-widest text-slate-500">Total codes</p><p className="mt-1 text-2xl font-bold text-navy">{loading ? "…" : counts.total}</p><p className="text-xs text-slate-500">Fresh batch 2, migration 003 (old batch wiped).</p></Card>
         <Card><p className="text-xs uppercase tracking-widest text-slate-500">Redeemed</p><p className="mt-1 text-2xl font-bold text-navy">{loading ? "…" : counts.redeemed}</p><p className="text-xs text-slate-500">{counts.assigned} assigned and waiting · {counts.revoked} revoked.</p></Card>
-        <Card><p className="text-xs uppercase tracking-widest text-slate-500">Unused</p><p className="mt-1 text-2xl font-bold text-navy">{loading ? "…" : counts.unused}</p><p className="text-xs text-slate-500">Available to assign after an approved payment.</p></Card>
+        <Card><p className="text-xs uppercase tracking-widest text-slate-500">Unused</p><p className="mt-1 text-2xl font-bold text-navy">{loading ? "…" : counts.unused}</p><p className="text-xs text-slate-500">Available to give out on WhatsApp.</p></Card>
       </div>
       <Card className="mt-4">
-        <h3 className="font-bold text-navy">Assign a code</h3>
-        <p className="mt-2 text-sm text-slate-600">Only after a payment is approved. Pick a student and an unused code; the student then activates with it at Dashboard → Payment &amp; Activation.</p>
+        <h3 className="font-bold text-navy">Mark a code as given</h3>
+        <p className="mt-2 text-sm text-slate-600">After you give a code to a student on WhatsApp, mark it here so you never hand the same code out twice. Any unused code works for any student — this is only your record.</p>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <select className="input-std" value={assignStudent} onChange={(e) => setAssignStudent(e.target.value)} aria-label="Student to assign to">
             <option value="">Choose a student…</option>
@@ -116,7 +116,7 @@ export default function Page() {
           </select>
         </div>
         <button className="btn-gold mt-3 px-4 py-2 text-sm disabled:opacity-50" disabled={busy} onClick={assign}>
-          {busy ? "Working…" : "Assign code"}
+          {busy ? "Working…" : "Mark as given"}
         </button>
       </Card>
       <Card className="mt-4">
@@ -144,7 +144,7 @@ export default function Page() {
                   <div>
                     <p className="font-bold text-navy">Code #{codes.findIndex((x) => x.id === c.id) + 1} <span className="font-normal text-slate-500">· {c.id.slice(0, 8)}…</span></p>
                     <p className="text-sm text-slate-600">
-                      {c.status === "unused" && "Unused — available to assign."}
+                      {c.status === "unused" && "Unused — available to give out."}
                       {c.status === "assigned" && `Assigned to ${c.assigned_name ?? "a student"}${c.assigned_at ? ` on ${new Date(c.assigned_at).toLocaleDateString()}` : ""}.`}
                       {c.status === "redeemed" && `Redeemed by ${c.redeemed_by_name ?? "a student"}${c.redeemed_at ? ` on ${new Date(c.redeemed_at).toLocaleDateString()}` : ""}.`}
                       {c.status === "revoked" && "Revoked — can no longer be used."}
@@ -193,8 +193,8 @@ export default function Page() {
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-600">
           <li>Only hashes are stored (SHA-256). Plaintext codes exist only in the owner&apos;s confidential specification PDF.</li>
           <li>Import is idempotent: re-running migration 003 adds nothing (ON CONFLICT DO NOTHING).</li>
-          <li>Assign a code only after a payment is approved. Revoke only an unused code, with a reason.</li>
-          <li>Redemption is atomic (redeem_code() in migration 001): simultaneous attempts cannot redeem the same code twice.</li>
+          <li>Mark a code as given after you hand it out on WhatsApp. Revoke only an unused code, with a reason.</li>
+          <li>Redemption is atomic (redeem_code() in migration 005): simultaneous attempts cannot redeem the same code twice.</li>
           <li>When all 30 are redeemed, new activations are blocked with a contact-admin message. Only the owner may authorise a new batch.</li>
         </ul>
       </Card>

@@ -25,7 +25,7 @@ export default function Page() {
       {err && <div className="mb-4"><Alert kind="error">{err}</Alert></div>}
       <Card>
         <h3 className="font-bold text-navy">Audit log</h3>
-        <p className="mt-2 text-sm text-slate-600">Every privileged action writes a row to admin_activity_logs (administrator, action, target, detail, timestamp). Review it after payment approvals, code assignments, suspensions and certificate changes.</p>
+        <p className="mt-2 text-sm text-slate-600">Every privileged action writes a row to admin_activity_logs (administrator, action, target, detail, timestamp). Review it after code assignments, revocations, suspensions and certificate changes.</p>
         {loading ? (
           <p className="mt-4 text-sm text-slate-600">Loading the audit log…</p>
         ) : logs.length === 0 ? (

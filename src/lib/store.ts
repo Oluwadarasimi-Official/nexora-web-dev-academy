@@ -12,8 +12,6 @@ export type LocalProgress = {
   certificates: { level: number; id: string; title: string; issuedAt: string }[];
   notifications: { id: string; text: string; at: string; read: boolean }[];
   activated: boolean;
-  paymentStatus: "none" | "pending" | "approved" | "rejected";
-  paymentRef: string;
 };
 
 const KEY = "nexora-progress-v1";
@@ -23,7 +21,6 @@ export function defaultProgress(): LocalProgress {
   return {
     completedTopics: [], daily: {}, quizAttempts: {}, examAttempts: {},
     certificates: [], notifications: [], activated: false,
-    paymentStatus: "none", paymentRef: "",
   };
 }
 export function loadProgress(): LocalProgress {

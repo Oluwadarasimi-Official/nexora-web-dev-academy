@@ -8,8 +8,6 @@ type Overview = {
   studentsTotal: number;
   studentsActivated: number;
   studentsUnactivated: number;
-  paymentsPending: number;
-  paymentsTotal: number;
   codesTotal: number;
   codesUnused: number;
   codesAssigned: number;
@@ -34,7 +32,6 @@ export default function Page() {
   const metrics: [string, number | null, string][] = [
     ["Registered students", data?.studentsTotal ?? null, "Profiles"],
     ["Activated students", data?.studentsActivated ?? null, "Profiles with activated = true"],
-    ["Pending payments", data?.paymentsPending ?? null, "Payments with status = pending"],
     ["Unactivated students", data?.studentsUnactivated ?? null, "Registered minus activated"],
     ["Access codes — total", data?.codesTotal ?? null, "Fresh batch 2 (migration 003)"],
     ["Access codes — redeemed", data?.codesRedeemed ?? null, "From code_redemptions"],
@@ -59,7 +56,7 @@ export default function Page() {
           {!data ? (
             <p className="mt-2 text-sm text-slate-600">Loading…</p>
           ) : data.recentActivity.length === 0 ? (
-            <p className="mt-2 text-sm text-slate-600">No admin actions recorded yet. Approvals, code assignments, suspensions and certificate changes will appear here.</p>
+            <p className="mt-2 text-sm text-slate-600">No admin actions recorded yet. Code assignments, revocations, suspensions and certificate changes will appear here.</p>
           ) : (
             <ul className="mt-2 space-y-2 text-sm text-slate-700">
               {data.recentActivity.map((a) => (
@@ -74,7 +71,7 @@ export default function Page() {
         </Card>
         <Card>
           <h3 className="font-bold text-navy">Daily admin routine</h3>
-          <p className="mt-2 text-sm text-slate-600">Review pending payments, assign codes only after approval, and check the audit log after every privileged action.</p>
+          <p className="mt-2 text-sm text-slate-600">Give codes to students on WhatsApp after payment, mark them as given on the Access Codes page, and check the audit log after every privileged action.</p>
           <p className="mt-2 text-sm text-slate-600">
             Codes: {data ? `${data.codesAssigned} assigned · ${data.codesRevoked} revoked · ${data.codesUnused} unused` : "Loading…"}
           </p>

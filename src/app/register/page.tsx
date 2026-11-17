@@ -8,14 +8,13 @@ export default function Register() {
  const router = useRouter();
  const { error, setError, info, setInfo } = useAuthMessage();
  const [name, setName] = useState(""); const [email, setEmail] = useState("");
- const [password, setPassword] = useState(""); const [confirm, setConfirm] = useState("");
+ const [password, setPassword] = useState("");
  const [busy, setBusy] = useState(false);
  async function submit(e: React.FormEvent) {
  e.preventDefault(); setError(""); setInfo("");
  if (name.trim().length < 2) return setError("Enter your full name.");
  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return setError("Enter a valid email address.");
  if (password.length < 8) return setError("Password must be at least 8 characters.");
- if (password !== confirm) return setError("Passwords do not match.");
  setBusy(true);
  try {
  const res = await supabaseSignUp(name.trim(), email.trim().toLowerCase(), password);
@@ -32,7 +31,6 @@ export default function Register() {
  <div><label className={labelCls} htmlFor="name">Full name</label><input id="name" className={inputCls} value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" required /></div>
  <div><label className={labelCls} htmlFor="email">Email address</label><input id="email" type="email" className={inputCls} value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required /></div>
  <div><label className={labelCls} htmlFor="password">Password (at least 8 characters)</label><input id="password" type="password" className={inputCls} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" required /></div>
- <div><label className={labelCls} htmlFor="confirm">Confirm password</label><input id="confirm" type="password" className={inputCls} value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="new-password" required /></div>
  <button className={submitCls} disabled={busy}>{busy ? "Creating account…" : "Create Account"}</button>
  </form>
  <p className="mt-2 text-sm text-slate-600">Already registered? <Link className="font-semibold text-sky" href="/login">Log in</Link></p>

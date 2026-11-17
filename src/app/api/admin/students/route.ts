@@ -2,39 +2,30 @@ import { NextResponse } from "next/server";
 import { requireAdmin, logAdmin } from "@/lib/adminApi";
 
 // GET /api/admin/students — real student list from profiles, with each
-// student's latest payment status, completed-topic count and certificate
-// count joined in code. Admin only.
+// student's completed-topic count and certificate count joined in code.
+// Admin only.
 export async function GET(req: Request) {
   const guard = await requireAdmin(req);
   if ("error" in guard) return guard.error;
   const { client } = guard.ctx;
   try {
-    const [profiles, payments, progress, certs] = await Promise.all([
+    const [profiles, progress, certs] = await Promise.all([
       client
         .from("profiles")
         .select(
           "id,full_name,email,activated,suspended,suspension_reason,current_level,created_at"
         )
         .order("created_at", { ascending: false }),
-      client
-        .from("payments")
-        .select("student_id,status,created_at")
-        .order("created_at", { ascending: false }),
       client.from("lesson_progress").select("student_id"),
       client.from("certificates").select("student_id"),
     ]);
     const err =
-      profiles.error || payments.error || progress.error || certs.error;
+      profiles.error || progress.error || certs.error;
     if (err)
       return NextResponse.json(
         { error: "Could not load students." },
         { status: 500 }
       );
-    const latestPayment = new Map<string, string>();
-    for (const p of payments.data ?? []) {
-      if (!latestPayment.has(p.student_id))
-        latestPayment.set(p.student_id, p.status);
-    }
     const topicCount = new Map<string, number>();
     for (const row of progress.data ?? [])
       topicCount.set(row.student_id, (topicCount.get(row.student_id) ?? 0) + 1);
@@ -50,7 +41,6 @@ export async function GET(req: Request) {
       suspension_reason: s.suspension_reason,
       current_level: s.current_level,
       created_at: s.created_at,
-      paymentStatus: latestPayment.get(s.id) ?? "none",
       completedTopics: topicCount.get(s.id) ?? 0,
       certificates: certCount.get(s.id) ?? 0,
     }));

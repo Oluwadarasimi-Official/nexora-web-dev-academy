@@ -94,7 +94,7 @@ export default function DashboardShell({ children, title }: { children: React.Re
  </nav>
  {!progress.activated && (
  <div className="mt-3 rounded-[1.75rem] border border-gold/40 bg-[#fdf8ec] px-4 py-2.5 text-sm text-navy shadow-[0_8px_24px_rgba(10,42,94,0.05)]">
- Your account is not activated yet — lessons are locked until you redeem an access code. Go to <Link className="font-semibold underline" href="/dashboard/payment">Payment &amp; Activation</Link> to submit your payment reference.
+ Your account is not activated yet — lessons are locked until you redeem an access code. Pay on WhatsApp, get your code from the owner, and redeem it at <Link className="font-semibold underline" href="/dashboard/payment">Payment &amp; Activation</Link>.
  </div>
  )}
  <div className="mt-3">{children}</div>

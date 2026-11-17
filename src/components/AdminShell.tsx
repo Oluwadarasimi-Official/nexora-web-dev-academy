@@ -17,7 +17,7 @@ import { adminFetch } from "@/lib/adminClient";
  sliding sidebar (hamburger, top right). The server-side
  verification notice moved into the sidebar too. */
 const PRIMARY = [
- ["Dashboard", "/admin"], ["Students", "/admin/students"], ["Payment Verification", "/admin/payments"],
+ ["Dashboard", "/admin"], ["Students", "/admin/students"],
  ["Access Codes", "/admin/codes"],
 ];
 const SECONDARY: [string, string][] = [
