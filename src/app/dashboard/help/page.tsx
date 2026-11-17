@@ -15,23 +15,23 @@ export default function Help() {
   return (
     <DashboardShell title="Help & Support">
       <Card>
-        <h3 className="font-bold text-navy">Send a support request</h3>
+        <h3 className="font-bold text-white">Send a support request</h3>
         <form onSubmit={submit} className="mt-3 space-y-3">
-          <div><label className="block text-sm font-semibold text-navy" htmlFor="cat">Category</label>
-            <select id="cat" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" value={category} onChange={(e) => setCategory(e.target.value)}>
+          <div><label className="block text-sm font-semibold text-white" htmlFor="cat">Category</label>
+            <select id="cat" className="mt-1 w-full input-glass" value={category} onChange={(e) => setCategory(e.target.value)}>
               {["Payment", "Activation / Access Code", "Lesson / Quiz", "Examination", "Certificate", "Account", "Other"].map((c) => (<option key={c}>{c}</option>))}
             </select></div>
-          <div><label className="block text-sm font-semibold text-navy" htmlFor="msg">Message</label>
-            <textarea id="msg" rows={4} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Describe the problem clearly…" /></div>
-          <button className="rounded-lg bg-navy px-4 py-2 text-sm font-semibold text-white">Send Request</button>
+          <div><label className="block text-sm font-semibold text-white" htmlFor="msg">Message</label>
+            <textarea id="msg" rows={4} className="mt-1 w-full input-glass" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Describe the problem clearly…" /></div>
+          <button className="btn-gold px-4 py-2 text-sm font-semibold text-white">Send Request</button>
         </form>
         {msg && <div className="mt-3"><Alert kind="success">{msg}</Alert></div>}
       </Card>
-      {sent.length > 0 && <Card className="mt-4"><h3 className="font-bold text-navy">Your requests (this device)</h3><ul className="mt-2 space-y-2 text-sm">{sent.map((s, i) => (<li key={i}><strong>{s.category}</strong> — {s.status} · {s.message}</li>))}</ul></Card>}
+      {sent.length > 0 && <Card className="mt-4"><h3 className="font-bold text-white">Your requests (this device)</h3><ul className="mt-2 space-y-2 text-sm">{sent.map((s, i) => (<li key={i}><strong>{s.category}</strong> — {s.status} · {s.message}</li>))}</ul></Card>}
       <Card className="mt-4">
-        <h3 className="font-bold text-navy">Urgent payment help</h3>
-        <p className="mt-2 text-sm text-slate-600">WhatsApp the academy: {WHATSAPP_NUMBER}</p>
-        <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" className="mt-3 inline-block rounded-lg bg-[#128c4b] px-4 py-2 text-sm font-semibold text-white">Chat on WhatsApp</a>
+        <h3 className="font-bold text-white">Urgent payment help</h3>
+        <p className="mt-2 text-sm text-slate-300">WhatsApp the academy: {WHATSAPP_NUMBER}</p>
+        <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" className="mt-3 inline-block rounded-full bg-[#128c4b] px-4 py-2 text-sm font-semibold text-white">Chat on WhatsApp</a>
       </Card>
     </DashboardShell>
   );

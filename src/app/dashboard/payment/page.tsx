@@ -44,34 +44,34 @@ export default function Payment() {
       {err && <div className="mb-4"><Alert kind="error">{err}</Alert></div>}
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
-          <h3 className="font-bold text-navy">1. Pay outside the platform</h3>
-          <p className="mt-2 text-sm text-slate-600">Contact the academy on WhatsApp and pay through the method the academy communicates. This website never receives or holds funds.</p>
-          <p className="mt-2 text-sm font-semibold text-navy">{WHATSAPP_NUMBER}</p>
-          <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" className="mt-3 inline-block rounded-lg bg-[#128c4b] px-4 py-2 text-sm font-semibold text-white">Chat on WhatsApp</a>
+          <h3 className="font-bold text-white">1. Pay outside the platform</h3>
+          <p className="mt-2 text-sm text-slate-300">Contact the academy on WhatsApp and pay through the method the academy communicates. This website never receives or holds funds.</p>
+          <p className="mt-2 text-sm font-semibold text-white">{WHATSAPP_NUMBER}</p>
+          <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" className="mt-3 inline-block rounded-full bg-[#128c4b] px-4 py-2 text-sm font-semibold text-white">Chat on WhatsApp</a>
         </Card>
         <Card>
-          <h3 className="font-bold text-navy">2. Submit your payment reference</h3>
-          <p className="mt-2 text-sm text-slate-600">Current status: <strong>{p.paymentStatus}</strong>{p.paymentRef ? ` · Reference: ${p.paymentRef}` : ""}. A claim or screenshot is not automatic proof — an administrator verifies every payment.</p>
+          <h3 className="font-bold text-white">2. Submit your payment reference</h3>
+          <p className="mt-2 text-sm text-slate-300">Current status: <strong>{p.paymentStatus}</strong>{p.paymentRef ? ` · Reference: ${p.paymentRef}` : ""}. A claim or screenshot is not automatic proof — an administrator verifies every payment.</p>
           <form onSubmit={submitPayment} className="mt-3 space-y-3">
-            <div><label className="block text-sm font-semibold text-navy" htmlFor="ref">Payment confirmation / reference</label><input id="ref" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" value={ref} onChange={(e) => setRef(e.target.value)} placeholder="e.g. transfer reference" /></div>
-            <div><label className="block text-sm font-semibold text-navy" htmlFor="note">Evidence note (optional)</label><input id="note" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. bank, date, amount" /></div>
-            <button disabled={busy} className="rounded-lg bg-navy px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Submit Payment Confirmation</button>
+            <div><label className="block text-sm font-semibold text-white" htmlFor="ref">Payment confirmation / reference</label><input id="ref" className="mt-1 w-full input-glass" value={ref} onChange={(e) => setRef(e.target.value)} placeholder="e.g. transfer reference" /></div>
+            <div><label className="block text-sm font-semibold text-white" htmlFor="note">Evidence note (optional)</label><input id="note" className="mt-1 w-full input-glass" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. bank, date, amount" /></div>
+            <button disabled={busy} className="btn-gold px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Submit Payment Confirmation</button>
           </form>
         </Card>
         <Card>
-          <h3 className="font-bold text-navy">3. Redeem your access code</h3>
-          <p className="mt-2 text-sm text-slate-600">Your code is assigned by an administrator only after your payment is approved. Enter it once — one code, one student, one use.</p>
-          {p.activated ? <p className="mt-3 font-semibold text-emerald-700">Your account is activated ✓</p> : (
+          <h3 className="font-bold text-white">3. Redeem your access code</h3>
+          <p className="mt-2 text-sm text-slate-300">Your code is assigned by an administrator only after your payment is approved. Enter it once — one code, one student, one use.</p>
+          {p.activated ? <p className="mt-3 font-semibold text-emerald-300">Your account is activated ✓</p> : (
             <form onSubmit={redeem} className="mt-3 space-y-3">
-              <div><label className="block text-sm font-semibold text-navy" htmlFor="code">Access code</label><input id="code" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 font-mono" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} placeholder="NEX-XXXX-XXXX-XXXX" /></div>
-              <button disabled={busy} className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-navy disabled:opacity-50">Redeem Code &amp; Activate</button>
+              <div><label className="block text-sm font-semibold text-white" htmlFor="code">Access code</label><input id="code" className="mt-1 w-full input-glass font-mono" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} placeholder="NEX-XXXX-XXXX-XXXX" /></div>
+              <button disabled={busy} className="btn-gold px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Redeem Code &amp; Activate</button>
             </form>
           )}
-          <p className="mt-3 text-xs text-slate-500">If all 30 initial codes are redeemed, new activations are blocked and you will be asked to contact the administrator. Only the owner may authorise an additional batch.</p>
+          <p className="mt-3 text-xs text-slate-400">If all 30 initial codes are redeemed, new activations are blocked and you will be asked to contact the administrator. Only the owner may authorise an additional batch.</p>
         </Card>
         <Card>
-          <h3 className="font-bold text-navy">What happens next</h3>
-          <p className="mt-2 text-sm text-slate-600">Pending → administrator approves or rejects with a reason → if approved, a code is assigned to you → you redeem it here → lessons unlock. You will see each step as a notification on your dashboard.</p>
+          <h3 className="font-bold text-white">What happens next</h3>
+          <p className="mt-2 text-sm text-slate-300">Pending → administrator approves or rejects with a reason → if approved, a code is assigned to you → you redeem it here → lessons unlock. You will see each step as a notification on your dashboard.</p>
         </Card>
       </div>
     </DashboardShell>

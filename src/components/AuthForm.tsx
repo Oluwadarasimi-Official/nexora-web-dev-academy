@@ -2,22 +2,23 @@
 import { useState } from "react";
 import { getBrowserSupabase, isSupabaseConfigured } from "@/lib/supabase";
 import { saveSession } from "@/lib/store";
-import { Alert } from "@/components/ui";
+import { Alert, Logo } from "@/components/ui";
 
 export function AuthShell({ title, intro, children }: { title: string; intro: string; children: React.ReactNode }) {
   return (
-    <section className="mx-auto max-w-lg px-4 py-12">
-      <div className="rounded-2xl border border-[#e8dfc8] bg-white p-6 shadow-sm">
-        <h1 className="text-2xl font-bold text-navy">{title}</h1>
-        <p className="mt-2 text-sm text-slate-600">{intro}</p>
+    <section className="mx-auto max-w-lg px-4 py-8">
+      <div className="glass rounded-3xl p-6">
+        <div className="flex justify-center"><Logo size={64} /></div>
+        <h1 className="mt-4 text-center text-2xl font-bold text-white">{title}</h1>
+        <p className="mt-2 text-center text-sm text-slate-300">{intro}</p>
         <div className="mt-6">{children}</div>
       </div>
     </section>
   );
 }
-export const inputCls = "mt-1 w-full rounded-lg border border-slate-300 px-3 py-2";
-export const labelCls = "block text-sm font-semibold text-navy";
-export const submitCls = "w-full rounded-lg bg-navy px-4 py-2.5 font-semibold text-white hover:bg-sky disabled:opacity-50";
+export const inputCls = "input-glass mt-1";
+export const labelCls = "block text-sm font-semibold text-slate-200";
+export const submitCls = "btn-gold w-full px-4 py-2.5 disabled:opacity-50";
 
 export function useAuthMessage() {
   const [error, setError] = useState("");

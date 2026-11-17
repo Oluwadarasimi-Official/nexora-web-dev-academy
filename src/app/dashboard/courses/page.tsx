@@ -17,11 +17,11 @@ export default function Courses() {
             <Card key={l.level}>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h3 className="text-lg font-bold text-navy">Level {l.level} — {l.name} · {done}/{topics.length} topics</h3>
-                  <p className="text-sm text-slate-600">{l.description}</p>
-                  <p className="text-sm text-slate-600">{unlocked ? "Unlocked" : `Locked — complete Level ${l.level - 1} first.`} · Certificate: {l.certificateTitle}</p>
+                  <h3 className="text-lg font-bold text-white">Level {l.level} — {l.name} · {done}/{topics.length} topics</h3>
+                  <p className="text-sm text-slate-300">{l.description}</p>
+                  <p className="text-sm text-slate-300">{unlocked ? "Unlocked" : `Locked — complete Level ${l.level - 1} first.`} · Certificate: {l.certificateTitle}</p>
                 </div>
-                <Link href={`/dashboard/level/${l.level}`} className="rounded-lg bg-navy px-4 py-2 text-sm font-semibold text-white">Open Level {l.level}</Link>
+                <Link href={`/dashboard/level/${l.level}`} className="btn-gold px-4 py-2 text-sm font-semibold text-white">Open Level {l.level}</Link>
               </div>
             </Card>
           );

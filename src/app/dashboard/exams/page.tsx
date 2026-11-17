@@ -63,38 +63,38 @@ export default function Exams() {
       {err && <div className="mb-4"><Alert kind="error">{err}</Alert></div>}
       {result && (
         <Card className="mb-4">
-          <h3 className="text-lg font-bold text-navy">Examination result — Level {result.level}</h3>
-          <p className="mt-2 text-sm text-slate-700">Objective: {result.objectiveScore}/{result.objectiveTotal} (marked automatically on the server). Theory: {result.theoryStatus} — graded by an authorised examiner against the published rubric; no marks are fabricated. Overall status: <strong>{result.status}</strong>.</p>
-          <p className="mt-2 text-sm text-slate-600">{result.status === "passed" ? "Congratulations — your certificate for this level can now be issued from My Certificates." : "You have not passed yet. Revise the level and try again when ready."}</p>
+          <h3 className="text-lg font-bold text-white">Examination result — Level {result.level}</h3>
+          <p className="mt-2 text-sm text-slate-200">Objective: {result.objectiveScore}/{result.objectiveTotal} (marked automatically on the server). Theory: {result.theoryStatus} — graded by an authorised examiner against the published rubric; no marks are fabricated. Overall status: <strong>{result.status}</strong>.</p>
+          <p className="mt-2 text-sm text-slate-300">{result.status === "passed" ? "Congratulations — your certificate for this level can now be issued from My Certificates." : "You have not passed yet. Revise the level and try again when ready."}</p>
         </Card>
       )}
       {started && exam ? (
         <Card>
           <div className="flex flex-wrap justify-between gap-3">
-            <h3 className="text-lg font-bold text-navy">{exam.title}</h3>
-            <p className="font-mono text-lg font-bold text-red-700">Time left: {mm}:{ss}</p>
+            <h3 className="text-lg font-bold text-white">{exam.title}</h3>
+            <p className="font-mono text-lg font-bold text-rose-300">Time left: {mm}:{ss}</p>
           </div>
-          <p className="mt-2 text-sm text-slate-600">{exam.instructions}</p>
-          <p className="mt-2 text-sm text-slate-600"><strong>Rubric:</strong> {exam.rubric}</p>
-          <h4 className="mt-6 font-bold text-navy">Section A — Objective ({exam.objectiveCount} questions)</h4>
+          <p className="mt-2 text-sm text-slate-300">{exam.instructions}</p>
+          <p className="mt-2 text-sm text-slate-300"><strong>Rubric:</strong> {exam.rubric}</p>
+          <h4 className="mt-6 font-bold text-white">Section A — Objective ({exam.objectiveCount} questions)</h4>
           <div className="mt-3 space-y-3">
             {objectiveQs.map((q) => (
-              <div key={q.key} className="rounded-lg border border-slate-200 p-3">
-                <p className="text-sm font-semibold text-navy">{q.q}</p>
+              <div key={q.key} className="glass-soft rounded-2xl border border-white/10 p-3">
+                <p className="text-sm font-semibold text-white">{q.q}</p>
                 <div className="mt-2 space-y-1">{q.options.map((o, oi) => (<label key={oi} className="flex gap-2 text-sm"><input type="radio" name={q.key} checked={answers[q.key] === String(oi)} onChange={() => setAnswers({ ...answers, [q.key]: String(oi) })} />{o}</label>))}</div>
               </div>
             ))}
           </div>
-          <h4 className="mt-6 font-bold text-navy">Section B — Theory ({exam.theoryCount} questions)</h4>
+          <h4 className="mt-6 font-bold text-white">Section B — Theory ({exam.theoryCount} questions)</h4>
           <div className="mt-3 space-y-3">
             {theoryQs.map((q) => (
-              <div key={q.key} className="rounded-lg border border-slate-200 p-3">
-                <p className="text-sm font-semibold text-navy">{q.q}</p>
-                <textarea className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" rows={4} value={answers[q.key] || ""} onChange={(e) => setAnswers({ ...answers, [q.key]: e.target.value })} placeholder="Write your answer here…" />
+              <div key={q.key} className="glass-soft rounded-2xl border border-white/10 p-3">
+                <p className="text-sm font-semibold text-white">{q.q}</p>
+                <textarea className="mt-2 w-full input-glass text-sm" rows={4} value={answers[q.key] || ""} onChange={(e) => setAnswers({ ...answers, [q.key]: e.target.value })} placeholder="Write your answer here…" />
               </div>
             ))}
           </div>
-          <button onClick={submitExam} disabled={busy} className="mt-6 rounded-lg bg-navy px-5 py-2.5 font-semibold text-white disabled:opacity-50">{busy ? "Submitting…" : "Submit Examination"}</button>
+          <button onClick={submitExam} disabled={busy} className="mt-6 btn-gold px-5 py-2.5 font-semibold text-white disabled:opacity-50">{busy ? "Submitting…" : "Submit Examination"}</button>
         </Card>
       ) : (
         <div className="space-y-4">
@@ -103,11 +103,11 @@ export default function Exams() {
             const att = p.examAttempts[`level-${e.level}`];
             return (
               <Card key={e.level}>
-                <h3 className="text-lg font-bold text-navy">{e.title}</h3>
-                <p className="mt-1 text-sm text-slate-600">{LEVELS[e.level - 1].description}</p>
-                <p className="mt-1 text-sm text-slate-600">Duration {e.durationMinutes} minutes · {e.objectiveCount} objective + {e.theoryCount} theory · Pass mark {e.passMarkPercent}% · {done ? "Eligible — all topics and quizzes complete." : "Locked — complete all topics and quizzes in this level first."}</p>
-                {att && <p className="mt-1 text-sm text-slate-600">Last attempt: {att.status} · {new Date(att.at).toLocaleString()}</p>}
-                <button onClick={() => startExam(e.level)} disabled={!done || busy} className="mt-3 rounded-lg bg-navy px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Start Examination</button>
+                <h3 className="text-lg font-bold text-white">{e.title}</h3>
+                <p className="mt-1 text-sm text-slate-300">{LEVELS[e.level - 1].description}</p>
+                <p className="mt-1 text-sm text-slate-300">Duration {e.durationMinutes} minutes · {e.objectiveCount} objective + {e.theoryCount} theory · Pass mark {e.passMarkPercent}% · {done ? "Eligible — all topics and quizzes complete." : "Locked — complete all topics and quizzes in this level first."}</p>
+                {att && <p className="mt-1 text-sm text-slate-300">Last attempt: {att.status} · {new Date(att.at).toLocaleString()}</p>}
+                <button onClick={() => startExam(e.level)} disabled={!done || busy} className="mt-3 btn-gold px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Start Examination</button>
               </Card>
             );
           })}

@@ -21,7 +21,7 @@ export default function VerifyCertificate() {
     finally { setBusy(false); }
   }
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
+    <div className="mx-auto max-w-3xl px-4 py-8">
       <AuthShell title="Verify a Certificate" intro="Enter the certificate ID exactly as printed on the certificate. Only safe public fields are shown — never email or private account data.">
         <AuthMessages error={error} info={info} />
         <form onSubmit={submit} className="space-y-4" noValidate>
@@ -31,13 +31,13 @@ export default function VerifyCertificate() {
       </AuthShell>
       {result && result.valid && (
         <div className="mt-8">
-          <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
+          <div className="mb-4 rounded-lg border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm font-semibold text-emerald-300">
             Status: {result.status === "revoked" ? "REVOKED — this certificate is no longer valid." : "VALID"}
           </div>
           <CertificateView cert={{ certificateId: result.certificateId || "", studentName: result.studentName || "", title: result.title || "", level: result.level || 1, levelName: result.levelName || "Beginner", issuedAt: result.issuedAt || new Date().toISOString(), status: result.status }} />
         </div>
       )}
-      {result && !result.valid && <p className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">Invalid: no certificate with that ID was found, or it has been revoked. Check the ID and try again.</p>}
+      {result && !result.valid && <p className="mt-6 rounded-lg border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">Invalid: no certificate with that ID was found, or it has been revoked. Check the ID and try again.</p>}
     </div>
   );
 }

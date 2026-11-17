@@ -35,8 +35,8 @@ export default function Register() {
         <div><label className={labelCls} htmlFor="confirm">Confirm password</label><input id="confirm" type="password" className={inputCls} value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="new-password" required /></div>
         <button className={submitCls} disabled={busy}>{busy ? "Creating account…" : "Create Account"}</button>
       </form>
-      <p className="mt-4 text-sm text-slate-600">Already registered? <Link className="font-semibold text-sky" href="/login">Log in</Link></p>
-      <p className="mt-3 text-xs text-slate-500">{isConfiguredNote()}</p>
+      <p className="mt-4 text-sm text-slate-300">Already registered? <Link className="font-semibold text-cyan-300" href="/login">Log in</Link></p>
+      <p className="mt-3 text-xs text-slate-400">{isConfiguredNote()}</p>
     </AuthShell>
   );
 }

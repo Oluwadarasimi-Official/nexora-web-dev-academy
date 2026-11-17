@@ -15,12 +15,12 @@ export default function AdminSetup() {
     } catch { setErr("Network error."); } finally { setBusy(false); }
   }
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12">
+    <div className="mx-auto max-w-2xl px-4 py-8">
       <Card>
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-dark">One-time Admin Bootstrap</p>
-        <h1 className="mt-1 text-2xl font-bold text-navy">Set Up the First Administrator</h1>
-        <p className="mt-2 text-sm text-slate-600">This page promotes an <strong>already registered</strong> student account to administrator. It requires the <code>ADMIN_SETUP_TOKEN</code> environment variable, which only the owner sets in Vercel (Production, server-only). No admin password is invented or hardcoded anywhere.</p>
-        <div className="mt-4 rounded-lg border border-slate-200 bg-[#fdf8ec] p-4 text-sm text-slate-700">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-300">One-time Admin Bootstrap</p>
+        <h1 className="mt-1 text-2xl font-bold text-white">Set Up the First Administrator</h1>
+        <p className="mt-2 text-sm text-slate-300">This page promotes an <strong>already registered</strong> student account to administrator. It requires the <code>ADMIN_SETUP_TOKEN</code> environment variable, which only the owner sets in Vercel (Production, server-only). No admin password is invented or hardcoded anywhere.</p>
+        <div className="mt-4 glass-soft rounded-2xl border border-white/10 p-4 text-sm text-slate-200">
           <strong>Steps:</strong>
           <ol className="mt-1 list-decimal space-y-1 pl-5">
             <li>Register the future admin as an ordinary student at /register.</li>
@@ -31,11 +31,11 @@ export default function AdminSetup() {
         {msg && <div className="mt-4"><Alert kind="success">{msg}</Alert></div>}
         {err && <div className="mt-4"><Alert kind="error">{err}</Alert></div>}
         <form onSubmit={submit} className="mt-4 space-y-3">
-          <div><label className="block text-sm font-semibold text-navy" htmlFor="email">Registered email to promote</label><input id="email" type="email" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
-          <div><label className="block text-sm font-semibold text-navy" htmlFor="token">ADMIN_SETUP_TOKEN</label><input id="token" type="password" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" value={token} onChange={(e) => setToken(e.target.value)} required autoComplete="off" /></div>
-          <button disabled={busy} className="rounded-lg bg-navy px-4 py-2.5 font-semibold text-white disabled:opacity-50">{busy ? "Checking…" : "Promote to Administrator"}</button>
+          <div><label className="block text-sm font-semibold text-white" htmlFor="email">Registered email to promote</label><input id="email" type="email" className="mt-1 w-full input-glass" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
+          <div><label className="block text-sm font-semibold text-white" htmlFor="token">ADMIN_SETUP_TOKEN</label><input id="token" type="password" className="mt-1 w-full input-glass" value={token} onChange={(e) => setToken(e.target.value)} required autoComplete="off" /></div>
+          <button disabled={busy} className="btn-gold px-4 py-2.5 font-semibold text-white disabled:opacity-50">{busy ? "Checking…" : "Promote to Administrator"}</button>
         </form>
-        <p className="mt-4 text-xs text-slate-500">The token is checked server-side and is never logged. If ADMIN_SETUP_TOKEN is not set, this page always refuses — that is the safe default.</p>
+        <p className="mt-4 text-xs text-slate-400">The token is checked server-side and is never logged. If ADMIN_SETUP_TOKEN is not set, this page always refuses — that is the safe default.</p>
       </Card>
     </div>
   );

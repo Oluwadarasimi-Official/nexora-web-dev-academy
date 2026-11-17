@@ -24,7 +24,7 @@ export default function ForgotPassword() {
         <div><label className={labelCls} htmlFor="email">Email address</label><input id="email" type="email" className={inputCls} value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required /></div>
         <button className={submitCls} disabled={busy}>{busy ? "Sending…" : "Send Reset Link"}</button>
       </form>
-      <p className="mt-3 text-xs text-slate-500">Supabase connected: {isSupabaseConfigured() ? "yes" : "not yet — see README/HANDOVER for the owner setup steps."}</p>
+      <p className="mt-3 text-xs text-slate-400">Supabase connected: {isSupabaseConfigured() ? "yes" : "not yet — see README/HANDOVER for the owner setup steps."}</p>
     </AuthShell>
   );
 }

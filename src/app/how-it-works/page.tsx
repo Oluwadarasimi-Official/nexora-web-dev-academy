@@ -13,11 +13,11 @@ export default function HowItWorks() {
   ];
   return (<div>
     <PageHero title="How It Works" intro="Eight steps from registration to certificate. Every step is enforced by the system — not by trust alone." />
-    <section className="mx-auto max-w-6xl px-4 py-10">
+    <section className="mx-auto max-w-6xl px-4 py-7">
       <div className="grid gap-4 md:grid-cols-2">
-        {steps.map(([t, d], i) => (<Card key={t}><h3 className="font-bold text-navy">{i + 1}. {t}</h3><p className="mt-2 text-sm text-slate-600">{d}</p></Card>))}
+        {steps.map(([t, d], i) => (<Card key={t}><h3 className="font-bold text-white">{i + 1}. {t}</h3><p className="mt-2 text-sm text-slate-300">{d}</p></Card>))}
       </div>
-      <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" className="mt-8 inline-block rounded-lg bg-[#128c4b] px-5 py-2.5 font-semibold text-white">Start on WhatsApp — {WHATSAPP_NUMBER}</a>
+      <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" className="mt-8 inline-block rounded-full bg-[#128c4b] px-5 py-2.5 font-semibold text-white">Start on WhatsApp — {WHATSAPP_NUMBER}</a>
     </section>
   </div>);
 }

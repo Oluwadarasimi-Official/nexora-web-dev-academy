@@ -27,7 +27,7 @@ export default function Login() {
         <div><label className={labelCls} htmlFor="password">Password</label><input id="password" type="password" className={inputCls} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required /></div>
         <button className={submitCls} disabled={busy}>{busy ? "Logging in…" : "Log In"}</button>
       </form>
-      <p className="mt-4 text-sm text-slate-600"><Link className="font-semibold text-sky" href="/forgot-password">Forgot your password?</Link> · <Link className="font-semibold text-sky" href="/register">Register</Link></p>
+      <p className="mt-4 text-sm text-slate-300"><Link className="font-semibold text-cyan-300" href="/forgot-password">Forgot your password?</Link> · <Link className="font-semibold text-cyan-300" href="/register">Register</Link></p>
     </AuthShell>
   );
 }

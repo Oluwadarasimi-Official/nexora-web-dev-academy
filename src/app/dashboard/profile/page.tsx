@@ -16,17 +16,17 @@ export default function Profile() {
   return (
     <DashboardShell title="Profile">
       <Card>
-        <p className="text-sm text-slate-600"><strong>Name:</strong> {session?.name}</p>
-        <p className="mt-1 text-sm text-slate-600"><strong>Email:</strong> {session?.email}</p>
-        <p className="mt-1 text-sm text-slate-600"><strong>Activation:</strong> {p.activated ? "Activated" : "Not activated"} · <strong>Payment status:</strong> {p.paymentStatus}</p>
-        <p className="mt-1 text-sm text-slate-600"><strong>Topics completed:</strong> {p.completedTopics.length} · <strong>Certificates:</strong> {p.certificates.length}</p>
+        <p className="text-sm text-slate-300"><strong>Name:</strong> {session?.name}</p>
+        <p className="mt-1 text-sm text-slate-300"><strong>Email:</strong> {session?.email}</p>
+        <p className="mt-1 text-sm text-slate-300"><strong>Activation:</strong> {p.activated ? "Activated" : "Not activated"} · <strong>Payment status:</strong> {p.paymentStatus}</p>
+        <p className="mt-1 text-sm text-slate-300"><strong>Topics completed:</strong> {p.completedTopics.length} · <strong>Certificates:</strong> {p.certificates.length}</p>
         <div className="mt-4">
-          <label className="block text-sm font-semibold text-navy" htmlFor="name">Update display name</label>
-          <input id="name" className="mt-1 w-full max-w-md rounded-lg border border-slate-300 px-3 py-2" value={name} onChange={(e) => setName(e.target.value)} />
-          <button onClick={save} className="mt-3 rounded-lg bg-navy px-4 py-2 text-sm font-semibold text-white">Save Name</button>
+          <label className="block text-sm font-semibold text-white" htmlFor="name">Update display name</label>
+          <input id="name" className="mt-1 w-full max-w-md input-glass" value={name} onChange={(e) => setName(e.target.value)} />
+          <button onClick={save} className="mt-3 btn-gold px-4 py-2 text-sm font-semibold text-white">Save Name</button>
           {msg && <div className="mt-3"><Alert kind="success">{msg}</Alert></div>}
         </div>
-        <p className="mt-4 text-xs text-slate-500">Your password is managed by Supabase Auth and is never shown here. Use Forgot Password on the login page to change it.</p>
+        <p className="mt-4 text-xs text-slate-400">Your password is managed by Supabase Auth and is never shown here. Use Forgot Password on the login page to change it.</p>
       </Card>
     </DashboardShell>
   );

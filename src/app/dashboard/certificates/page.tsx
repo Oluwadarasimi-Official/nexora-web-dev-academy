@@ -37,16 +37,16 @@ export default function MyCertificates() {
           const eligible = levelComplete(l.level) && examPassed(l.level);
           return (
             <Card key={l.level}>
-              <h3 className="text-lg font-bold text-navy">Level {l.level} — {l.certificateTitle}</h3>
+              <h3 className="text-lg font-bold text-white">Level {l.level} — {l.certificateTitle}</h3>
               {cert ? (
                 <div className="mt-4">
                   <CertificateView cert={{ certificateId: cert.id, studentName: session?.name || "Student", title: cert.title, level: l.level, levelName: l.name, issuedAt: cert.issuedAt }} />
-                  <button onClick={() => window.print()} className="no-print mt-4 rounded-lg bg-navy px-4 py-2 text-sm font-semibold text-white">Download / Print Certificate (PDF via print)</button>
+                  <button onClick={() => window.print()} className="no-print mt-4 btn-gold px-4 py-2 text-sm font-semibold text-white">Download / Print Certificate (PDF via print)</button>
                 </div>
               ) : (
                 <div className="mt-2">
-                  <p className="text-sm text-slate-600">{eligible ? "You are eligible. Issue your certificate now." : "Not yet eligible. Complete every topic and quiz in this level and pass the final examination first."}</p>
-                  <button onClick={() => issue(l.level)} disabled={!eligible || busy} className="mt-3 rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-navy disabled:opacity-50">Issue My Certificate</button>
+                  <p className="text-sm text-slate-300">{eligible ? "You are eligible. Issue your certificate now." : "Not yet eligible. Complete every topic and quiz in this level and pass the final examination first."}</p>
+                  <button onClick={() => issue(l.level)} disabled={!eligible || busy} className="mt-3 btn-gold px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Issue My Certificate</button>
                 </div>
               )}
             </Card>

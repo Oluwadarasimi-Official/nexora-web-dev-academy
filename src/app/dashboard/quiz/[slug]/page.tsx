@@ -36,34 +36,34 @@ export default function QuizPage({ params }: { params: { slug: string } }) {
   }
   return (
     <DashboardShell title={`Quiz — ${topic.title}`}>
-      <p className="text-sm text-slate-600">10 multiple-choice questions · Pass mark 7/10 (70%) · Questions are marked on the server. Answer keys are not sent to your browser before submission.</p>
+      <p className="text-sm text-slate-300">10 multiple-choice questions · Pass mark 7/10 (70%) · Questions are marked on the server. Answer keys are not sent to your browser before submission.</p>
       {!p.activated && <div className="mt-4"><Alert kind="error">Quizzes are locked until your account is activated.</Alert></div>}
       {result ? (
         <Card className="mt-4">
-          <h3 className="text-xl font-bold text-navy">Your result: {result.score}/10 — {result.passed ? "Passed ✓" : "Not passed"}</h3>
-          <p className="mt-2 text-sm text-slate-600">{result.passed ? "Well done. You can now mark this topic complete from the lesson page." : "You need at least 7 correct. Review the explanations below and try again."}</p>
+          <h3 className="text-xl font-bold text-white">Your result: {result.score}/10 — {result.passed ? "Passed ✓" : "Not passed"}</h3>
+          <p className="mt-2 text-sm text-slate-300">{result.passed ? "Well done. You can now mark this topic complete from the lesson page." : "You need at least 7 correct. Review the explanations below and try again."}</p>
           <div className="mt-4 space-y-3">
             {result.review.map((r, i: number) => (
-              <div key={i} className="rounded-lg border border-slate-200 p-3 text-sm">
-                <p className="font-semibold text-navy">{i + 1}. {r.q}</p>
-                <p className={r.correct ? "text-emerald-700" : "text-red-700"}>{r.correct ? "✓ Correct" : `✗ Your answer: ${r.yourAnswer ?? "—"} · Correct answer: ${r.correctAnswer}`}</p>
-                <p className="text-slate-600">{r.explanation}</p>
+              <div key={i} className="glass-soft rounded-2xl border border-white/10 p-3 text-sm">
+                <p className="font-semibold text-white">{i + 1}. {r.q}</p>
+                <p className={r.correct ? "text-emerald-300" : "text-rose-300"}>{r.correct ? "✓ Correct" : `✗ Your answer: ${r.yourAnswer ?? "—"} · Correct answer: ${r.correctAnswer}`}</p>
+                <p className="text-slate-300">{r.explanation}</p>
               </div>
             ))}
           </div>
           <div className="mt-4 flex flex-wrap gap-3">
-            <Link href={`/dashboard/topic/${topic.slug}`} className="rounded-lg bg-navy px-4 py-2 text-sm font-semibold text-white">Back to Lesson</Link>
-            {!result.passed && <button onClick={() => { setResult(null); setAnswers({}); }} className="rounded-lg border border-navy px-4 py-2 text-sm font-semibold text-navy">Try Again</button>}
+            <Link href={`/dashboard/topic/${topic.slug}`} className="btn-gold px-4 py-2 text-sm font-semibold text-white">Back to Lesson</Link>
+            {!result.passed && <button onClick={() => { setResult(null); setAnswers({}); }} className="btn-glass px-4 py-2 text-sm">Try Again</button>}
           </div>
         </Card>
       ) : (
         <form onSubmit={submit} className="mt-4 space-y-4">
           {shuffled.map((q, qi) => (
             <Card key={q.index}>
-              <p className="font-semibold text-navy">{qi + 1}. {q.q}</p>
+              <p className="font-semibold text-white">{qi + 1}. {q.q}</p>
               <div className="mt-2 space-y-2">
                 {q.options.map((opt, oi) => (
-                  <label key={oi} className="flex cursor-pointer items-start gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm hover:border-sky">
+                  <label key={oi} className="flex cursor-pointer items-start gap-2 rounded-full border border-white/10 glass-soft px-3 py-2 text-sm hover:border-cyan-300/60">
                     <input type="radio" name={`q-${q.index}`} checked={answers[q.index] === oi} onChange={() => setAnswers({ ...answers, [q.index]: oi })} className="mt-1" />
                     <span>{opt}</span>
                   </label>
@@ -72,7 +72,7 @@ export default function QuizPage({ params }: { params: { slug: string } }) {
             </Card>
           ))}
           {err && <Alert kind="error">{err}</Alert>}
-          <button disabled={busy} className="rounded-lg bg-navy px-5 py-2.5 font-semibold text-white disabled:opacity-50">{busy ? "Marking…" : "Submit Quiz"}</button>
+          <button disabled={busy} className="btn-gold px-5 py-2.5 font-semibold text-white disabled:opacity-50">{busy ? "Marking…" : "Submit Quiz"}</button>
         </form>
       )}
     </DashboardShell>
