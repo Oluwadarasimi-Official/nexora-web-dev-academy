@@ -9,38 +9,8 @@
 ## Deployment status — 17 November 2026 (parent run, after the build)
 
 - **GitHub: DONE.** Repo created and pushed: https://github.com/Oluwadarasimi-Official/nexora-web-dev-academy
-- **Vercel: BLOCKED — owner action needed (do not present the URL as the new app yet).** The URL https://nexorawebdevacademy.vercel.app exists under the **Tech Nova Academy** team and currently serves an old redirect page to a protected (SSO-locked) deployment — that is NOT this new build. Every Vercel operation from this workspace on that team scope returns **403 forbidden** (list_projects, get_project, get_deployment, create_git_project all tested 17 Nov 2026). The MCP connection has identity/session scopes only, `list_teams` returns empty, and no `authorize_team_access` tool exists — re-running the same calls will not fix it. The real Vercel CLI on this machine has no credentials (`vercel whoami` → logged out).
-  - **Owner action (pick one):** (a) in the Vercel dashboard, open the existing `nexorawebdevacademy` project and link/import the GitHub repo `Oluwadarasimi-Official/nexora-web-dev-academy` (auto-deploy then builds every push); or (b) grant the Muse Vercel integration access to the Tech Nova Academy team; or (c) create a Vercel token (Dashboard → Account/Team Settings → Tokens) and give it to Muse through the secure entry, so the real CLI can deploy. After access is restored: set env vars `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `ADMIN_SETUP_TOKEN` (Production), deploy, then verify the live URL serves the new app (not the old redirect) and turn off deployment protection/SSO if it blocks public visitors.
-- **Supabase: BLOCKED — owner action needed.** The stored management credential returns **HTTP 403** for project `fodwlmprqreheqiskowy` (insufficient privileges on that project), so migrations could NOT be applied from this workspace. **Owner action:** in the Supabase dashboard for that project, open the SQL Editor and run, in order: `supabase/migrations/001_schema.sql`, then `supabase/migrations/002_seed_access_codes.sql`, then `supabase/seed-curriculum.sql`; verify counts (topics 73, quiz questions 730, examinations 3, access codes 30 unused). Then set Auth site URL + redirect allow-list to the production domain. Until this is done the app runs in its clearly-labelled local demo mode, not connected mode.
-**Supabase project:** https://fodwlmprqreheqiskowy.supabase.co (verify ownership before applying anything)
-
-## What was built
-
-- Public website: Home, About, Programme, Curriculum, How It Works, Certificates, Contact, Register, Login, Forgot Password, Reset Password, Verify Certificate.
-- Student portal: Overview, My Courses, Beginner / Intermediate / Advanced level pages, lesson pages, quizzes, examinations, certificates, progress, profile, help & support, payment & activation, logout.
-- Curriculum: **73 topics** (Beginner 26, Intermediate 25, Advanced 22), each a full lesson; **730 quiz questions** (exactly 10 per topic, 4 options each); **3 final examinations**; **3 certificate types** (Certificate of Completion; Certificate of Achievement; Advanced Web Development Certification).
-- Payments + codes: off-platform WhatsApp payment, reference submission, admin approve/reject, single-use code redemption (atomic, hashed).
-- Admin portal: dashboard, students, payments, codes, curriculum/quizzes/exams, certificates, announcements, support, logs, settings, one-time setup bootstrap.
-- Database: `supabase/migrations/001_schema.sql` (all tables, RLS, `redeem_code()`), `supabase/migrations/002_seed_access_codes.sql` (30 code **hashes only**), `supabase/seed-curriculum.sql` (73 topics / 730 questions / 3 exams).
-- Docs: `docs/01`–`docs/11` stage notes, `README.md`, this handover.
-
-## Verified (tested)
-
-- `node scripts/generate-curriculum.mjs` → 73 topics, 730 questions, L1 26 / L2 25 / L3 22; every topic has exactly 10 questions, every question 4 options (asserted in the script).
-- `node scripts/build-seed-sql.mjs` → seed written: 73 topics, 730 questions, 3 exams.
-- `node scripts/verify-counts.mjs` → all route files present; no plaintext access code (`NEX-XXXX-XXXX-XXXX`) anywhere in the repo.
-- `npm run build` → **PASSED, exit code 0** (Next.js 14.2.18, 48 static/dynamic pages generated, lint + type checks passed). Build log tail is in the handover report to the parent.
-- Logo copied unchanged to `public/logo.png` and used on home, About and certificates.
-
-## NOT tested (honest list — parent must verify live)
-
-- Supabase Auth sign-up / login / password reset against the real project (no `.env.local` with real values was created).
-- Applying migrations 001 / 002 and the curriculum seed to the Supabase project.
-- Code redemption against the real database (needs the applied migrations + a registered, payment-approved student).
-- Exam timer across refresh/reconnection; theory grading screen (the rubric and storage exist; the admin grading UI is a documented next step).
-- Certificate PDF download on a phone.
-- Admin flows end-to-end (payments, code assignment, suspension, revocation).
-- The Vercel deployment and the `nexorawebdevacademy.vercel.app` domain/ownership.
+- **Vercel: LIVE 17 Nov 2026 ~18:47 WAT.** https://nexorawebdevacademy.vercel.app serves the new app (home, curriculum, login, admin all 200; logo 200). Fixes applied by the parent after CLI login (oluwadavid2011-7798): project linked (`vercel link`, prj_X9omZ9VpKIN8tx3tNt9xtOII3p17), env vars confirmed (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` already set; `ADMIN_SETUP_TOKEN` added, Production, secret — value held by the owner only, never in this repo), SSO/deployment protection disabled (`ssoProtection: null` — it was serving the Vercel login page to everyone), project framework corrected from `null` to `nextjs` (that was the cause of the edge 404s on every URL), GitHub repo linked for auto-deploy (`vercel git connect`, production branch master — pushes to master now deploy automatically). NOTE: one approval prompt timed out during the final live checks on 17 Nov evening, so the certificate-verification API re-check did not run — re-run it before calling verification fully proven.
+- **Supabase: STILL BLOCKED — owner action needed.** The stored management credential returns **HTTP 403** for project `fodwlmprqreheqiskowy` (insufficient privileges on that project), so migrations could NOT be applied from this workspace; live probe returns PGRST205 (table `public.topics` not in schema cache). **Owner action:** in the Supabase dashboard for that project, open the SQL Editor and run, in order: `supabase/migrations/001_schema.sql`, then `supabase/migrations/002_seed_access_codes.sql`, then `supabase/seed-curriculum.sql`; verify counts (topics 73, quiz questions 730, examinations 3, access codes 30 unused). Then set Auth site URL + redirect allow-list to the production domain. Until this is done the app runs in its clearly-labelled local demo mode, not connected mode.
 
 ## Environment variable NAMES (never values)
 
