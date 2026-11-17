@@ -6,7 +6,6 @@ export default function Page() {
  <Card>
  <h3 className="font-bold text-navy">Support requests</h3>
  <p className="mt-2 text-sm text-slate-600">Requests live in support_requests (category, message, status, timestamps). Reply in the admin_reply field and set the status to in_progress or resolved. Students see the reply in Dashboard → Help &amp; Support.</p>
- <p className="mt-3 text-sm text-slate-600">No requests loaded: Supabase is not connected in this deployment yet.</p>
 </Card>
  </AdminShell>
  );

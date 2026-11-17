@@ -38,7 +38,7 @@ export default function TopicPage({ params }: { params: { slug: string } }) {
  if (isNew) next.daily[today] = (next.daily[today] || 0) + 1;
  pushNotification(next, `Topic completed: ${topicTitle} (Level ${topicLevel}).`);
  saveProgress(next);
- setMsg(`Topic completed. ${data.persisted ? "Saved to the academy database." : "Saved on this device (database sync pending — see HANDOVER)."} Remaining new topics today: ${isNew ? Math.max(0, remaining - 1) : remaining}.`);
+ setMsg(`Topic completed. ${data.persisted ? "Saved to the academy database." : "Saved on this device."} Remaining new topics today: ${isNew ? Math.max(0, remaining - 1) : remaining}.`);
  } catch { setErr("Network error. Try again."); }
  finally { setBusy(false); }
  }

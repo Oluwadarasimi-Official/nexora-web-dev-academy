@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { Card, SectionTitle, GoldButton } from "@/components/ui";
 import { LEVELS, TOPICS } from "@/lib/curriculum";
-import { FAQS, WHATSAPP_LINK, WHATSAPP_NUMBER, AUTHORITIES } from "@/lib/data";
+import { WHATSAPP_LINK, WHATSAPP_NUMBER, AUTHORITIES } from "@/lib/data";
 
 export default function Home() {
  return (
  <div>
- <section className="border-b border-slate-200 bg-white">
+ <section className="glass-hero">
  <div className="mx-auto max-w-6xl px-4 py-10">
  <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-dark">Nexora Web Dev. Academy</p>
  <h1 className="mt-2 max-w-3xl text-4xl font-extrabold leading-tight tracking-tight text-navy sm:text-5xl">Learn. Build. Innovate.</h1>
@@ -69,17 +69,6 @@ export default function Home() {
  <p className="mt-3 text-sm text-slate-500">This programme teaches skills. It does not claim government accreditation, university affiliation or any external endorsement.</p>
  </section>
 
- <section className="mx-auto max-w-6xl px-4 py-6">
- <SectionTitle>Frequently asked questions</SectionTitle>
- <div className="mt-6 space-y-3">
- {FAQS.map((f) => (
- <details key={f.q} className="rounded-xl border border-slate-200 card p-4">
- <summary className="cursor-pointer font-semibold text-navy">{f.q}</summary>
- <p className="mt-2 text-sm text-slate-600">{f.a}</p>
- </details>
- ))}
- </div>
- </section>
  </div>
  );
 }

@@ -24,7 +24,7 @@ export default function MyCertificates() {
  if (!next.certificates.some((c) => c.level === level)) next.certificates.push({ level, id: data.certificateId, title: data.title, issuedAt: data.issuedAt });
  pushNotification(next, `Certificate issued: ${data.title} (Level ${level}). Certificate ID ${data.certificateId}.`);
  saveProgress(next); setP(next);
- setMsg(`Certificate issued: ${data.certificateId}. ${data.persisted ? "Recorded in the academy database." : "Recorded on this device (database sync pending — see HANDOVER)."}`);
+ setMsg(`Certificate issued: ${data.certificateId}. ${data.persisted ? "Recorded in the academy database." : "Recorded on this device."}`);
  } catch { setErr("Network error."); } finally { setBusy(false); }
  }
  return (

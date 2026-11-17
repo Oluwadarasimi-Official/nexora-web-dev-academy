@@ -10,7 +10,7 @@ export default function Help() {
  e.preventDefault();
  if (message.trim().length < 5) return;
  const item = { category, message: message.trim(), status: "open", at: new Date().toISOString() };
- setSent([item, ...sent]); setMessage(""); setMsg("Support request recorded. An administrator will review it. (Stored on this device until the Supabase support_requests table is connected — see HANDOVER.)");
+ setSent([item, ...sent]); setMessage(""); setMsg("Support request recorded. An administrator will review it.");
  }
  return (
  <DashboardShell title="Help & Support">

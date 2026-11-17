@@ -25,7 +25,7 @@ export default function AdminSetup() {
  <ol className="mt-1 list-decimal space-y-1 pl-5">
  <li>Register the future admin as an ordinary student at /register.</li>
  <li>Set <code>ADMIN_SETUP_TOKEN</code> to a long random value in Vercel → Settings → Environment Variables (Production only).</li>
- <li>Enter that email and token below, once. After the first admin exists, use the SQL step in HANDOVER.md to add further admins — this page then refuses new promotions unless the token still matches.</li>
+ <li>Enter that email and token below, once. After the first admin exists, further admins are added by the owner directly in the database — this page then refuses new promotions unless the token still matches.</li>
  </ol>
  </div>
  {msg && <div className="mt-4"><Alert kind="success">{msg}</Alert></div>}

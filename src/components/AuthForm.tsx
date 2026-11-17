@@ -77,5 +77,5 @@ export function localRegisterAccount(name: string, email: string, password: stri
 export function isConfiguredNote() {
  return isSupabaseConfigured()
  ? "Connected to the academy's Supabase project."
- : "Supabase is not configured in this deployment yet — your account is stored locally on this device until the owner connects Supabase (see README). Your learning progress is still saved on this device.";
+ : "Your account is stored on this device for now. Your learning progress is still saved on this device.";
 }

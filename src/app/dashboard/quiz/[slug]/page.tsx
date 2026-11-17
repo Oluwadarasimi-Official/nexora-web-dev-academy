@@ -47,7 +47,7 @@ export default function QuizPage({ params }: { params: { slug: string } }) {
  {result.review.map((r, i: number) => (
  <div key={i} className="card-soft rounded-2xl border border-slate-200 p-3 text-sm">
  <p className="font-semibold text-navy">{i + 1}. {r.q}</p>
- <p className={r.correct ? "text-sky-600" : "text-red-700"}>{r.correct ? (<><Check className="inline h-4 w-4" /> Correct</>) : (<><X className="inline h-4 w-4" /> Your answer: {r.yourAnswer ?? "—"} · Correct answer: {r.correctAnswer}</>)}</p>
+ <p className={r.correct ? "text-sky-600" : "text-red-700"}>{r.correct ? (<><Check className="inline h-4 w-4" /> Correct</>) : (<><X className="inline h-4 w-4" /> Your answer: {r.yourAnswer ?? "No answer given"} · Correct answer: {r.correctAnswer}</>)}</p>
  <p className="text-slate-600">{r.explanation}</p>
  </div>
  ))}

@@ -6,7 +6,6 @@ export default function Page() {
  <Card>
  <h3 className="font-bold text-navy">Audit log</h3>
  <p className="mt-2 text-sm text-slate-600">Every privileged action writes a row to admin_activity_logs (administrator, action, target, detail, timestamp). Review it after payment approvals, code assignments, suspensions and certificate changes.</p>
- <p className="mt-3 text-sm text-slate-600">No log entries loaded: Supabase is not connected in this deployment yet.</p>
 </Card>
  </AdminShell>
  );

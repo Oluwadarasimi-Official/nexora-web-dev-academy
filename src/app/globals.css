@@ -2,16 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Nexora Web Dev. Academy — UI v3: clean standard look.
-   Palette ONLY: ivory/white background, champagne gold accents,
-   sky blue accents, navy text. No dark pages, no gradients,
-   no glass, no blur, no decorative colours. Standard spacing,
-   generous white space, clean white cards. */
+/* Nexora Web Dev. Academy — UI v4: REAL light glassmorphism on the
+   standard v3 layout. Palette ONLY: ivory/white backdrop, champagne
+   gold accents, sky blue accents, navy text. No dark pages, no orbs,
+   no glows, no violet/emerald/purple.
+   The glass is real frosted glass (iOS/macOS style): translucent white
+   panels with genuine backdrop blur over a soft light backdrop, hairline
+   light borders, soft layered shadows, a faint top highlight. The body
+   carries a very faint fixed wash of the same two accent colours so the
+   blur has something real to refract — you can sense the backdrop
+   through every panel. */
 :root { color-scheme: light; }
 html { scroll-behavior: smooth; overflow-x: clip; }
 body {
   overflow-x: clip;
-  background: #fffdf5;
+  background-color: #fffdf5;
+  background-image:
+    radial-gradient(900px 520px at 88% -8%, rgba(201, 162, 39, 0.09), rgba(201, 162, 39, 0) 62%),
+    radial-gradient(900px 620px at -10% 108%, rgba(30, 111, 217, 0.08), rgba(30, 111, 217, 0) 62%),
+    linear-gradient(180deg, #fffdf5 0%, #fdf9ec 52%, #f4f8fd 100%);
+  background-attachment: fixed;
   color: #334155;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   min-height: 100vh;
@@ -24,28 +34,61 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
 pre { white-space: pre-wrap; word-break: break-word; }
 ::selection { background: rgba(201, 162, 39, 0.25); color: #0a2a5e; }
 
-/* ---- Standard card system (white cards, thin border, soft shadow) ---- */
+/* ---- Real frosted-glass card system ---- */
 .card {
-  background: #ffffff;
-  border: 1px solid #e7e5e4;
+  background: rgba(255, 255, 255, 0.62);
+  -webkit-backdrop-filter: blur(18px) saturate(1.45);
+  backdrop-filter: blur(18px) saturate(1.45);
+  border: 1px solid rgba(255, 255, 255, 0.85);
   border-radius: 1rem;
-  box-shadow: 0 1px 3px rgba(10, 42, 94, 0.07), 0 6px 18px rgba(10, 42, 94, 0.05);
+  box-shadow:
+    0 0 0 1px rgba(10, 42, 94, 0.05),
+    0 1px 2px rgba(10, 42, 94, 0.05),
+    0 12px 32px rgba(10, 42, 94, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 .card-hover:hover {
   transform: translateY(-2px);
   border-color: rgba(201, 162, 39, 0.55);
-  box-shadow: 0 4px 10px rgba(10, 42, 94, 0.08), 0 12px 28px rgba(10, 42, 94, 0.08);
+  box-shadow:
+    0 0 0 1px rgba(201, 162, 39, 0.18),
+    0 4px 10px rgba(10, 42, 94, 0.07),
+    0 18px 38px rgba(10, 42, 94, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 .card-soft {
-  background: #fdf8ec;
-  border: 1px solid #efe7cd;
+  background: rgba(253, 248, 236, 0.62);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 1rem;
+  box-shadow:
+    0 0 0 1px rgba(10, 42, 94, 0.04),
+    0 8px 24px rgba(10, 42, 94, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 .chip {
-  background: #ffffff;
-  border: 1px solid #d6d3d1;
+  background: rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  backdrop-filter: blur(12px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 0 1px rgba(10, 42, 94, 0.05);
   color: #0a2a5e;
+}
+/* Frosted sticky header + hero band — the backdrop shows through. */
+.glass-header {
+  background: rgba(255, 253, 245, 0.72);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  backdrop-filter: blur(18px) saturate(1.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 1px 0 rgba(10, 42, 94, 0.04), 0 8px 24px rgba(10, 42, 94, 0.06);
+}
+.glass-hero {
+  background: rgba(255, 255, 255, 0.45);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.65);
 }
 .btn-gold {
   display: inline-block;
@@ -60,19 +103,23 @@ pre { white-space: pre-wrap; word-break: break-word; }
 .btn-gold:disabled { opacity: 0.5; transform: none; }
 .btn-sky {
   display: inline-block;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.65);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  backdrop-filter: blur(12px) saturate(1.4);
   border: 1.5px solid #1e6fd9;
   color: #1e6fd9;
   font-weight: 600;
   border-radius: 9999px;
   transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
-.btn-sky:hover { background: #eff6ff; transform: translateY(-1px); }
+.btn-sky:hover { background: rgba(239, 246, 255, 0.85); transform: translateY(-1px); }
 .input-std {
   width: 100%;
   border-radius: 0.6rem;
-  border: 1px solid #d6d3d1;
-  background: #ffffff;
+  border: 1px solid rgba(10, 42, 94, 0.14);
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  backdrop-filter: blur(10px) saturate(1.3);
   color: #0a2a5e;
   padding: 0.5rem 0.75rem;
 }
@@ -82,30 +129,38 @@ select.input-std option { background: #ffffff; color: #0a2a5e; }
 .std-table { border-collapse: separate; border-spacing: 0; }
 .std-table th { color: #64748b; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; text-align: left; padding: 0.55rem 0.75rem; border-bottom: 1px solid #e7e5e4; }
 .std-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid #f1f5f9; color: #334155; font-size: 0.875rem; vertical-align: top; }
-.std-table tr:hover td { background: #f8fafc; }
+.std-table tr:hover td { background: rgba(248, 250, 252, 0.7); }
 .std-table tr:last-child td { border-bottom: none; }
 
-/* Slide-in sidebar (drawer) — clean white panel */
+/* Slide-in sidebar (drawer) — real frosted glass panel */
 .drawer-backdrop { transition: opacity 0.3s ease; }
 .drawer-panel {
   transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.24, 1), visibility 0s linear 0.32s;
-  background: #ffffff;
-  border-left: 1px solid #e7e5e4;
-  box-shadow: -18px 0 50px rgba(10, 42, 94, 0.18);
+  background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  backdrop-filter: blur(22px) saturate(1.5);
+  border-left: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: -18px 0 50px rgba(10, 42, 94, 0.16), inset 1px 0 0 rgba(255, 255, 255, 0.7);
 }
 .drawer-panel:not(.drawer-closed) {
   transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.24, 1), visibility 0s;
 }
 .drawer-closed { visibility: hidden; }
 .drawer-link {
-  display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+  display: flex; align-items: center; gap: 0.65rem;
   width: 100%; border-radius: 9999px; padding: 0.65rem 0.85rem;
   color: #0a2a5e; font-size: 0.925rem; font-weight: 500;
   border: 1px solid transparent;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
-.drawer-link:hover { background: #eff6ff; border-color: #bfdbfe; color: #1e6fd9; }
+.drawer-link:hover { background: rgba(239, 246, 255, 0.8); border-color: #bfdbfe; color: #1e6fd9; }
 .drawer-link.active { background: rgba(201, 162, 39, 0.14); border-color: rgba(201, 162, 39, 0.55); color: #9a7b1a; }
+.drawer-link svg { flex-shrink: 0; }
+/* FAQ inside the sidebar — frosted glass questions, tap to expand. */
+.glass-faq summary { list-style: none; cursor: pointer; }
+.glass-faq summary::-webkit-details-marker { display: none; }
+.glass-faq summary .faq-chevron { transition: transform 0.2s ease; }
+.glass-faq[open] summary .faq-chevron { transform: rotate(180deg); }
 @media (prefers-reduced-motion: reduce) { .card, .card-hover, .drawer-panel, .drawer-backdrop { transition: none; } }
 
 @media print {

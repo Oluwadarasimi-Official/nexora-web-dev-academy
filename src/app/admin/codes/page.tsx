@@ -5,8 +5,8 @@ export default function Page() {
  <AdminShell title="Access-Code Management" intro="30 initial codes (hashes only). Import is idempotent; full codes are never shown in normal views or logs.">
  <div className="grid gap-4 md:grid-cols-3">
  <Card><p className="text-xs uppercase tracking-widest text-slate-500">Total codes</p><p className="mt-1 text-2xl font-bold text-navy">30</p><p className="text-xs text-slate-500">Fresh batch 2, migration 003 (old batch wiped).</p></Card>
- <Card><p className="text-xs uppercase tracking-widest text-slate-500">Redeemed</p><p className="mt-1 text-2xl font-bold text-navy">—</p><p className="text-xs text-slate-500">From code_redemptions once connected.</p></Card>
- <Card><p className="text-xs uppercase tracking-widest text-slate-500">Unused</p><p className="mt-1 text-2xl font-bold text-navy">—</p><p className="text-xs text-slate-500">30 minus redeemed, assigned and revoked.</p></Card>
+ <Card><p className="text-xs uppercase tracking-widest text-slate-500">Redeemed</p><p className="text-xs text-slate-500">From code_redemptions.</p></Card>
+ <Card><p className="text-xs uppercase tracking-widest text-slate-500">Unused</p><p className="text-xs text-slate-500">30 minus redeemed, assigned and revoked.</p></Card>
 </div>
 <Card className="mt-4">
  <h3 className="font-bold text-navy">Rules</h3>

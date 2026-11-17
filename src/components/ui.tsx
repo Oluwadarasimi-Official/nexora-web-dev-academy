@@ -42,7 +42,7 @@ export function Header() {
  ["Register", "/register"],
  ];
  return (
- <header className="sticky top-0 z-40 border-b border-slate-200 bg-white shadow-sm">
+ <header className="glass-header sticky top-0 z-40">
  <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-2.5">
  <Link href="/" aria-label="Nexora Web Dev. Academy — home"><Logo /></Link>
  <div className="flex flex-wrap items-center gap-2">
@@ -90,7 +90,7 @@ export function Footer() {
 
 export function PageHero({ title, intro }: { title: string; intro: string }) {
  return (
- <section className="border-b border-slate-200 bg-white">
+ <section className="glass-hero">
  <div className="mx-auto max-w-6xl px-4 py-7">
  <h1 className="text-3xl font-extrabold tracking-tight text-navy sm:text-4xl">{title}</h1>
  <p className="mt-2 max-w-3xl text-slate-600">{intro}</p>
