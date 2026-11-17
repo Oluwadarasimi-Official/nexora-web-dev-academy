@@ -1,6 +1,50 @@
--- Nexora Web Dev. Academy — curriculum seed chunk 2/7 (generated; apply AFTER 001_schema.sql, in order 01..7).
+-- Nexora Web Dev. Academy — curriculum seed chunk 2/7 (statement-safe: each file is standalone, run in order 01..7 AFTER 001_schema.sql).
 -- Rerunnable: inserts use ON CONFLICT DO NOTHING.
 
+do $$ declare qid uuid; qzid uuid; begin
+  select id into qzid from public.quizzes where topic_id = (select id from public.topics where slug = 'introduction-to-css');
+  if qzid is null then return; end if;
+  if (select count(*) from public.quiz_questions where quiz_id = qzid) > 0 then return; end if; -- already seeded
+  insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'What is the main purpose of Introduction to CSS?', 'The lesson''s focus is: what CSS does, how to attach it, and the cascade.', 0, 1) returning id into qid;
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'To make a page look busy with decoration.', false, 0);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'To memorise definitions without practising.', false, 1);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'To support real web development work: what CSS does, how to attach it, and the cascade.', true, 2);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'To replace the need to test anything.', false, 3);
+  insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'Which statement best describes a key idea of this lesson?', 'The lesson states: CSS controls layout, colour, spacing and typography.', 1, 1) returning id into qid;
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Error messages should always be ignored.', false, 0);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Copying without understanding is enough.', false, 1);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Code never needs to be tested.', false, 2);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'CSS controls layout, colour, spacing and typography.', true, 3);
+  insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'Which statement is also true about Introduction to CSS?', 'The lesson states: an external stylesheet keeps styling separate from HTML.', 2, 1) returning id into qid;
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'It has no effect on a real project.', false, 0);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'It should never be practised.', false, 1);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'An external stylesheet keeps styling separate from HTML.', true, 2);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'It only matters for examinations.', false, 3);
+  insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'A student is working on Introduction to CSS. What is the best next step after reading the lesson?', 'Learning is confirmed by doing: the activity and the quiz check real understanding.', 3, 1) returning id into qid;
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Skip the activity and move to the next topic.', false, 0);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Memorise the headings only.', false, 1);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Copy the code and never run it.', false, 2);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Do the practical activity and check the result.', true, 3);
+  insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'Which of these is NOT a good approach to Introduction to CSS?', 'Copying without understanding is listed as a common mistake in this lesson.', 4, 1) returning id into qid;
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Copying code without understanding it.', true, 0);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Checking the result against the success criteria.', false, 1);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Reading the explanation first.', false, 2);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Trying a small example yourself.', false, 3);
+  insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'In the code example for this lesson, what matters most?', 'The code explanation walks through each part so the learner understands the why, not just the what.', 5, 1) returning id into qid;
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'The exact number of lines in the example.', false, 0);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Typing it as fast as possible.', false, 1);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Whether the code looks impressive.', false, 2);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Understanding what each line does and why it is there.', true, 3);
+  insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'Which practice best follows the professional standard taught in this lesson?', 'Professional practice is to apply the idea in a real project and verify the result.', 6, 1) returning id into qid;
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'The standard, professional way to apply introduction to css in a project — and test the result.', true, 0);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Use the same code for every problem.', false, 1);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Ship untested work and hope it works.', false, 2);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Hide errors instead of fixing them.', false, 3);
+  insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'What happens if a student ignores the common mistakes listed in this lesson?', 'The mistakes section exists because beginners commonly repeat these errors.', 7, 1) returning id into qid;
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'The quiz becomes easier.', false, 0);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Their work automatically becomes correct.', false, 1);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Nothing — mistakes do not matter.', false, 2);
+  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'They are likely to repeat the same error in their own work.', true, 3);
   insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'To pass this topic''s quiz, what score is required?', 'The academy pass mark is 70% — at least 7 correct answers out of 10.', 8, 1) returning id into qid;
   insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'At least 5 out of 10 (50%).', false, 0);
   insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'At least 7 out of 10 (70%).', true, 1);
@@ -615,59 +659,3 @@ insert into public.lessons (topic_id, objectives, explanation, code_lang, code, 
 console.log(passMark(8)); // true
 console.log(passMark(5)); // false', 'Work through the example line by line. It demonstrates defining and calling reusable blocks of code. The first lines set up the context; the middle lines do the main work described by the two key ideas above; the final lines produce the result you can check in a browser, editor or terminal. Change one value, re-run it, and confirm that the change behaves as you predicted — that check is the real learning.', 'Build a small, real example of functions: defining and calling reusable blocks of code. Use the code example as a starting point, change it to fit your own example, and check that it works. Write down one thing that surprised you and one thing you would do differently next time. You may not mark this topic complete until you have finished the lesson and passed its quiz (7/10).', '[{"mistake":"Skipping the idea and copying the code example without understanding it.","correction":"Read each line, change one thing, and observe what changes. Understanding survives; copying does not."},{"mistake":"Treating functions as a fact to memorise instead of a skill to practise.","correction":"Practise on a small real example the same day. A topic is only complete after its lesson and a passed quiz (7/10)."},{"mistake":"Ignoring error messages and warnings while working on functions.","correction":"Read the message, note the file and line, and fix the named problem before moving on."}]'::jsonb, 'In short: Functions is about defining and calling reusable blocks of code. Remember that a function takes inputs (parameters) and can return a result, and that functions keep code DRY: write once, call many times. Practise it on a real example, check your work, and then take the 10-question quiz — 7 correct answers passes the topic.', 1 from public.topics where slug = 'functions' on conflict (topic_id, version) do nothing;
 insert into public.quizzes (topic_id, pass_mark) select id, 7 from public.topics where slug = 'functions' on conflict (topic_id) do nothing;
-do $$ declare qid uuid; qzid uuid; begin
-  select id into qzid from public.quizzes where topic_id = (select id from public.topics where slug = 'functions');
-  if qzid is null then return; end if;
-  if (select count(*) from public.quiz_questions where quiz_id = qzid) > 0 then return; end if; -- already seeded
-  insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'What is the main purpose of Functions?', 'The lesson''s focus is: defining and calling reusable blocks of code.', 0, 1) returning id into qid;
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'To support real web development work: defining and calling reusable blocks of code.', true, 0);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'To make a page look busy with decoration.', false, 1);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'To replace the need to test anything.', false, 2);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'To memorise definitions without practising.', false, 3);
-  insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'Which statement best describes a key idea of this lesson?', 'The lesson states: a function takes inputs (parameters) and can return a result.', 1, 1) returning id into qid;
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Copying without understanding is enough.', false, 0);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'A function takes inputs (parameters) and can return a result.', true, 1);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Error messages should always be ignored.', false, 2);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Code never needs to be tested.', false, 3);
-  insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'Which statement is also true about Functions?', 'The lesson states: functions keep code DRY: write once, call many times.', 2, 1) returning id into qid;
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'It has no effect on a real project.', false, 0);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'It only matters for examinations.', false, 1);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Functions keep code DRY: write once, call many times.', true, 2);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'It should never be practised.', false, 3);
-  insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'A student is working on Functions. What is the best next step after reading the lesson?', 'Learning is confirmed by doing: the activity and the quiz check real understanding.', 3, 1) returning id into qid;
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Do the practical activity and check the result.', true, 0);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Copy the code and never run it.', false, 1);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Memorise the headings only.', false, 2);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Skip the activity and move to the next topic.', false, 3);
-  insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'Which of these is NOT a good approach to Functions?', 'Copying without understanding is listed as a common mistake in this lesson.', 4, 1) returning id into qid;
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Reading the explanation first.', false, 0);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Trying a small example yourself.', false, 1);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Copying code without understanding it.', true, 2);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Checking the result against the success criteria.', false, 3);
-  insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'In the code example for this lesson, what matters most?', 'The code explanation walks through each part so the learner understands the why, not just the what.', 5, 1) returning id into qid;
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Understanding what each line does and why it is there.', true, 0);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Typing it as fast as possible.', false, 1);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Whether the code looks impressive.', false, 2);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'The exact number of lines in the example.', false, 3);
-  insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'Which practice best follows the professional standard taught in this lesson?', 'Professional practice is to apply the idea in a real project and verify the result.', 6, 1) returning id into qid;
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'The standard, professional way to apply functions in a project — and test the result.', true, 0);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Hide errors instead of fixing them.', false, 1);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Ship untested work and hope it works.', false, 2);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Use the same code for every problem.', false, 3);
-  insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'What happens if a student ignores the common mistakes listed in this lesson?', 'The mistakes section exists because beginners commonly repeat these errors.', 7, 1) returning id into qid;
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Nothing — mistakes do not matter.', false, 0);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'They are likely to repeat the same error in their own work.', true, 1);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'The quiz becomes easier.', false, 2);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Their work automatically becomes correct.', false, 3);
-  insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'To pass this topic''s quiz, what score is required?', 'The academy pass mark is 70% — at least 7 correct answers out of 10.', 8, 1) returning id into qid;
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'At least 7 out of 10 (70%).', true, 0);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'A perfect 10 out of 10.', false, 1);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'At least 5 out of 10 (50%).', false, 2);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Any score, as long as the quiz is attempted.', false, 3);
-  insert into public.quiz_questions (quiz_id, question_text, explanation, position, version) values (qzid, 'After this lesson, what should a student be able to do?', 'The objectives are to explain the topic and apply it — checked by the activity and the quiz.', 9, 1) returning id into qid;
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Skip the quiz and still complete the topic.', false, 0);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Teach the topic without ever practising it.', false, 1);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Explain functions and apply it in a small real task.', true, 2);
-  insert into public.quiz_options (question_id, option_text, is_correct, position) values (qid, 'Recite the lesson word for word.', false, 3);
-end $$;
-insert into public.topics (module_id, slug, title, summary, position, published) select id, 'arrays-and-objects', 'Arrays and Objects', 'Storing collections and structured data.', 0, true from public.modules where level_id = 1 and title = 'JavaScript Essentials' on conflict (slug) do nothing;
