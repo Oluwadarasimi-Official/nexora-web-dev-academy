@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { EXAMS } from "@/lib/curriculum";
-import { isLevelComplete } from "@/lib/examServer";
+import { isLevelComplete, examTotals } from "@/lib/examServer";
 import { getUserFromRequest, isSupabaseConfigured } from "@/lib/supabase";
+import { gradeTheoryWithGroq, computeExamResult, persistGrading } from "@/lib/aiGrading";
+import { readAcademySettings } from "@/lib/settings";
 
 // GET /api/exam-status — the signed-in student's own exam + certificate
 // state, read from the database (the source of truth). The Examinations
@@ -15,11 +17,85 @@ export async function GET(req: Request) {
     return NextResponse.json({ ok: true, connected: false });
   const { user, client } = await getUserFromRequest(req);
   if (!user || !client) return NextResponse.json({ error: "Log in first." }, { status: 401 });
-  const { data: attempts } = await client
+  let { data: attempts } = await client
     .from("examination_attempts")
     .select("id,level_id,started_at,expires_at,submitted_at,objective_score,theory_score,total_score,status,theory_answers")
     .eq("student_id", user.id)
     .order("started_at", { ascending: false });
+  // AUTO AI GRADING (owner rule, 17 Nov 2026 night: "Auto AI Grade" —
+  // no admin tap). Any attempt still "submitted" grades itself right
+  // here, with the exact same Groq marking the submit route and the
+  // admin "AI grade" action use (same model, rubric, 0–10 per question).
+  // Best-effort and silent on failure: if the key is missing or Groq
+  // fails, gradeTheoryWithGroq returns null and the attempt simply stays
+  // "submitted" — no marks are ever invented. persistGrading is
+  // status-guarded, so a concurrent grading can never double-apply, and
+  // once an attempt is graded its status is no longer "submitted", so
+  // later loads never call Groq again. The admin "AI grade" button stays
+  // as a manual retry if the AI was unavailable at load time.
+  try {
+    const settings = await readAcademySettings(client);
+    for (const a of attempts ?? []) {
+      if (a.status !== "submitted") continue;
+      const exam = EXAMS.find((e) => e.level === a.level_id);
+      if (!exam) continue;
+      const stored = (Array.isArray(a.theory_answers) ? a.theory_answers : []) as {
+        question: string;
+        answer: string;
+      }[];
+      if (stored.length !== exam.theoryCount || stored.every((t) => !t.answer?.trim()))
+        continue;
+      const ai = await gradeTheoryWithGroq({
+        examTitle: exam.title,
+        rubric: exam.rubric,
+        theoryCount: exam.theoryCount,
+        answers: stored,
+      });
+      if (!ai) continue;
+      const graded = stored.map((t, i) => ({
+        question: t.question,
+        answer: t.answer,
+        marks: ai.marks[i] ?? 0,
+        feedback: ai.feedback[i] ?? "",
+      }));
+      const theoryScore = ai.marks.reduce((s, m) => s + m, 0);
+      const objectiveScore = a.objective_score ?? 0;
+      const { totalPossible } = examTotals(a.level_id);
+      const result = computeExamResult(
+        objectiveScore,
+        theoryScore,
+        totalPossible,
+        settings.examPassMarkPercent
+      );
+      const saved = await persistGrading(client, a.id, ["submitted"], {
+        theory_answers: graded,
+        theory_score: theoryScore,
+        total_score: result.totalScore,
+        status: result.status,
+      });
+      if (!saved) continue;
+      try {
+        await client.from("notifications").insert({
+          student_id: user.id,
+          text:
+            result.status === "passed"
+              ? `Your Level ${a.level_id} examination has been graded (AI): PASSED (${result.totalScore}/${totalPossible}). Your certificate can now be issued from My Certificates.`
+              : `Your Level ${a.level_id} examination has been graded (AI): not passed (${result.totalScore}/${totalPossible}, pass mark ${result.passThreshold}). Revise the level and try again when ready.`,
+          kind: "exam",
+        });
+      } catch {}
+    }
+    // Re-read so the response below shows the freshly graded result.
+    const refetched = await client
+      .from("examination_attempts")
+      .select("id,level_id,started_at,expires_at,submitted_at,objective_score,theory_score,total_score,status,theory_answers")
+      .eq("student_id", user.id)
+      .order("started_at", { ascending: false });
+    if (!refetched.error) attempts = refetched.data;
+  } catch {
+    // Auto-grading must never break the status read: on any error the
+    // attempt stays "submitted" and the page shows it awaiting grading.
+  }
   const { data: certs } = await client
     .from("certificates")
     .select("level_id,certificate_id,title,issued_at")
