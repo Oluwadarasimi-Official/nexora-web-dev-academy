@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import { Card, Alert } from "@/components/ui";
 import { EXAMS, LEVELS, TOPICS } from "@/lib/curriculum";
-import { loadProgress, saveProgress, pushNotification } from "@/lib/store";
+import { loadProgress, saveProgress, pushNotification, useSyncedProgress } from "@/lib/store";
+import { getPublicSettings } from "@/lib/settings";
 import { studentPost, studentGet } from "@/lib/studentClient";
 
 type ExamQuestion = { key: string; q: string; options: string[] };
@@ -18,15 +19,28 @@ type StartedExam = {
 };
 type ExamStatusResponse = {
   connected?: boolean;
-  attempts?: Record<string, { status: string; submittedAt: string | null; startedAt: string }>;
+  attempts?: Record<string, { status: string; submittedAt: string | null; startedAt: string; objectiveScore: number | null; theoryScore: number | null; totalScore: number | null; theoryAnswers?: { question: string; marks: number | null; feedback: string | null }[]; aiGraded?: boolean }>;
 };
+type SubmitResult = { level: number; objectiveScore: number; objectiveTotal: number; theoryStatus: string; status: string; theoryScore?: number; totalScore?: number; totalPossible?: number; passThreshold?: number; grading?: string };
 
 export default function Exams() {
- const [p, setP] = useState(loadProgress());
+ // Residual from pass B: the page used a bare loadProgress() snapshot,
+ // so a graded result arriving on another device never refreshed the
+ // display. useSyncedProgress() re-reads whenever progress is saved
+ // anywhere (server hydration included).
+ const p = useSyncedProgress();
+ // B9: the pass mark shown here is the number the server enforces
+ // (academy_settings), not the hardcoded exam data.
+ const [examPassMark, setExamPassMark] = useState<number | null>(null);
+ useEffect(() => { getPublicSettings().then((s) => setExamPassMark(s.examPassMarkPercent)).catch(() => {}); }, []);
  const [started, setStarted] = useState<StartedExam | null>(null);
  const [answers, setAnswers] = useState<Record<string, string>>({});
- const [result, setResult] = useState<{ level: number; objectiveScore: number; objectiveTotal: number; theoryStatus: string; status: string } | null>(null);
+ const [result, setResult] = useState<SubmitResult | null>(null);
  const [err, setErr] = useState(""); const [busy, setBusy] = useState(false);
+ // Server truth for graded results: objective + theory + total +
+ // pass/fail + AI feedback, refreshed from /api/exam-status on mount.
+ // Local progress only carries the status; the scores live here.
+ const [serverResults, setServerResults] = useState<ExamStatusResponse["attempts"]>({});
  const [secondsLeft, setSecondsLeft] = useState(0);
  const [expired, setExpired] = useState(false);
  const submitRef = useRef<(() => void) | null>(null);
@@ -40,6 +54,7 @@ export default function Exams() {
    try {
     const data = await studentGet<ExamStatusResponse>("/api/exam-status");
     if (!data.connected || !data.attempts) return;
+    setServerResults(data.attempts);
     const next = loadProgress();
     let changed = false;
     for (const [level, a] of Object.entries(data.attempts)) {
@@ -49,11 +64,10 @@ export default function Exams() {
       changed = true;
      }
     }
-    if (changed) { saveProgress(next); setP(next); }
+    if (changed) { saveProgress(next); }
    } catch { /* offline / demo flow: local progress stands */ }
   })();
  }, []);
- useEffect(() => { setP(loadProgress()); }, []);
  useEffect(() => {
  if (!started) return;
  const t = setInterval(() => {
@@ -91,7 +105,7 @@ export default function Exams() {
  if (!started) return;
  setBusy(true);
  try {
- const data = await studentPost<{ level: number; objectiveScore: number; objectiveTotal: number; theoryStatus: string; status: string }>("/api/exam-submit", { level: started.level, attemptId: started.attemptId, answers });
+ const data = await studentPost<SubmitResult>("/api/exam-submit", { level: started.level, attemptId: started.attemptId, answers });
  setResult(data);
  const next = loadProgress();
  next.examAttempts[`level-${started.level}`] = { status: data.status, at: new Date().toISOString() };
@@ -111,8 +125,8 @@ export default function Exams() {
  {result && (
  <Card className="mb-4">
  <h3 className="text-lg font-bold text-navy">Examination result — Level {result.level}</h3>
- <p className="mt-2 text-sm text-slate-700">Objective: {result.objectiveScore}/{result.objectiveTotal} (marked automatically on the server). Theory: {result.theoryStatus} — graded by an authorised examiner against the published rubric; no marks are fabricated. Overall status: <strong>{result.status}</strong>.</p>
- <p className="mt-2 text-sm text-slate-600">{result.status === "passed" ? "Congratulations — your certificate for this level can now be issued from My Certificates." : result.status === "timed_out" ? "The time expired before your submission arrived, so it was not accepted. You can start the examination again when ready." : result.status === "submitted" ? "Submitted. Your theory answers are now with an authorised examiner — your graded result will appear on this page once grading is complete." : "You have not passed yet. Revise the level and try again when ready."}</p>
+ <p className="mt-2 text-sm text-slate-700">Objective: {result.objectiveScore}/{result.objectiveTotal} (marked automatically on the server). Theory: {result.theoryStatus}{result.grading === "ai" ? " — graded automatically by AI against the published rubric" : result.status === "submitted" ? " — graded automatically by AI when the grading service is available, otherwise by an authorised examiner" : ""}; no marks are fabricated. Overall status: <strong>{result.status}</strong>{result.totalScore !== undefined && result.totalPossible !== undefined ? <> — Total: <strong>{result.totalScore}/{result.totalPossible}</strong>{result.theoryScore !== undefined ? <> (theory {result.theoryScore})</> : null}</> : null}.</p>
+ <p className="mt-2 text-sm text-slate-600">{result.status === "passed" ? "Congratulations — your certificate for this level can now be issued from My Certificates." : result.status === "timed_out" ? "The time expired before your submission arrived, so it was not accepted. You can start the examination again when ready." : result.status === "submitted" ? "Submitted. Your theory answers are now awaiting grading — your graded result will appear on this page once grading is complete." : "You have not passed yet. Revise the level and try again when ready."}</p>
  </Card>
  )}
  {started && exam ? (
@@ -148,12 +162,26 @@ export default function Exams() {
  {EXAMS.map((e) => {
  const done = levelComplete(e.level);
  const att = p.examAttempts[`level-${e.level}`];
+ const srv = serverResults?.[`level-${e.level}`] ?? serverResults?.[String(e.level)];
+ const graded = srv && (srv.status === "passed" || srv.status === "failed");
  return (
  <Card key={e.level}>
  <h3 className="text-lg font-bold text-navy">{e.title}</h3>
  <p className="mt-1 text-sm text-slate-600">{LEVELS[e.level - 1].description}</p>
- <p className="mt-1 text-sm text-slate-600">Duration {e.durationMinutes} minutes · {e.objectiveCount} objective + {e.theoryCount} theory · Pass mark {e.passMarkPercent}% · {done ? "Eligible — all topics and quizzes complete." : "Locked — complete all topics and quizzes in this level first."}</p>
+ <p className="mt-1 text-sm text-slate-600">Duration {e.durationMinutes} minutes · {e.objectiveCount} objective + {e.theoryCount} theory · Pass mark {examPassMark ?? e.passMarkPercent}% · {done ? "Eligible — all topics and quizzes complete." : "Locked — complete all topics and quizzes in this level first."}</p>
  {att && <p className="mt-1 text-sm text-slate-600">Last attempt: {att.status} · {new Date(att.at).toLocaleString()}</p>}
+ {graded && (
+ <div className="mt-3 rounded-2xl border border-gold/50 bg-[#fdf8ec] p-3">
+ <p className="text-sm font-bold text-navy">Graded result: {srv.status === "passed" ? "PASSED" : "NOT PASSED"} — Objective {srv.objectiveScore ?? "—"}/{e.objectiveCount} · Theory {srv.theoryScore ?? "—"}/{e.theoryCount * 10} · Total {srv.totalScore ?? "—"}/{(e.objectiveCount ?? 20) + e.theoryCount * 10}{srv.aiGraded ? " (AI-graded)" : ""}</p>
+ {(srv.theoryAnswers ?? []).length > 0 && (
+ <ul className="mt-2 space-y-2 text-sm text-slate-700">
+ {srv.theoryAnswers!.map((t, i) => (
+ <li key={i}><strong>{t.question}</strong> — {t.marks ?? "—"}/10{t.feedback ? <span className="block text-slate-600">AI feedback: {t.feedback}</span> : null}</li>
+ ))}
+ </ul>
+ )}
+ </div>
+ )}
  <button onClick={() => startExam(e.level)} disabled={!done || busy} className="mt-3 btn-gold px-4 py-2 text-sm font-semibold disabled:opacity-50">Start Examination</button>
  </Card>
  );

@@ -4,9 +4,10 @@ import { requireAdmin, logAdmin } from "@/lib/adminApi";
 // Academy settings, read from and written to the academy_settings table.
 // GET returns the stored values with the documented defaults for any key
 // not yet stored. POST updates one key. Admin only. Changes are logged.
-// NOTE: these are the academy's stored settings. Nothing in the server
-// code reads them yet — the quiz/exam marking code enforces its own pass
-// marks (7/10 and 70%). The settings page edits the stored values only.
+// The values ARE enforced server-side (fix pass C, B9): quiz-submit reads
+// quiz_pass_mark, complete-topic reads daily_new_topic_limit, and the
+// exam grading route reads exam_pass_mark_percent. Student pages display
+// the same numbers via GET /api/settings.
 const DEFAULTS: Record<string, string> = {
   daily_new_topic_limit: "3",
   timezone: "Africa/Lagos",

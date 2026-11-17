@@ -71,14 +71,15 @@ export async function POST(req: Request) {
           { error: "Provide an announcement ID." },
           { status: 400 }
         );
-      const { error } = await client
+      const { data, error } = await client
         .from("announcements")
         .delete()
-        .eq("id", id);
-      if (error)
+        .eq("id", id)
+        .select("id");
+      if (error || !data || data.length === 0)
         return NextResponse.json(
-          { error: "Could not delete the announcement." },
-          { status: 500 }
+          { error: "Could not delete the announcement (it may not exist)." },
+          { status: 409 }
         );
       await logAdmin(
         client,

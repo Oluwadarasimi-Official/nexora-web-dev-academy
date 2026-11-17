@@ -25,6 +25,15 @@ export type LocalProgress = {
   certificates: { level: number; id: string; title: string; issuedAt: string }[];
   notifications: { id: string; text: string; at: string; read: boolean }[];
   activated: boolean;
+  // Lesson-view gate (owner rule): topic slugs whose lesson (course) the
+  // student has opened. The quiz for a topic stays locked until its slug
+  // is here (or the topic is completed — completion implies the lesson
+  // was opened). Merged from GET /api/progress (server) + local records.
+  openedLessons: string[];
+  // B8: suspension state from the server (GET /api/progress). The shell
+  // shows a banner when true; the action routes enforce it server-side.
+  suspended: boolean;
+  suspensionReason: string | null;
 };
 
 const KEY = "nexora-progress-v1";
@@ -34,6 +43,8 @@ export function defaultProgress(): LocalProgress {
   return {
     completedTopics: [], daily: {}, quizAttempts: {}, examAttempts: {},
     certificates: [], notifications: [], activated: false,
+    openedLessons: [],
+    suspended: false, suspensionReason: null,
   };
 }
 export function loadProgress(): LocalProgress {
@@ -89,7 +100,11 @@ export type ServerProgress = {
   ok?: boolean;
   configured?: boolean;
   activated: boolean;
+  suspended?: boolean;
+  suspensionReason?: string | null;
   completedTopics: string[];
+  // Topic slugs whose lesson the student has opened (lesson_views).
+  openedLessons?: string[];
   daily: Record<string, number>;
   quizAttempts: Record<string, { score: number; passed: boolean; at: string }>;
   certificates: { level: number; id: string; title: string; issuedAt: string }[];
@@ -122,8 +137,18 @@ export async function hydrateProgressFromServer(): Promise<boolean> {
   const local = loadProgress();
   const next: LocalProgress = { ...local };
   next.activated = Boolean(local.activated || data.activated);
+  // Suspension is server-authoritative: the server's value replaces the
+  // local one (a lifted suspension must clear the banner on next sync).
+  if (typeof data.suspended === "boolean") {
+    next.suspended = data.suspended;
+    next.suspensionReason = data.suspensionReason ?? null;
+  }
   const completed = new Set([...local.completedTopics, ...(data.completedTopics || [])]);
   next.completedTopics = Array.from(completed);
+  // Lesson views: union of server + local slugs — a locally recorded open
+  // (e.g. demo mode, or a view posted just before a failed sync) is never lost.
+  const opened = new Set([...(local.openedLessons || []), ...(data.openedLessons || [])]);
+  next.openedLessons = Array.from(opened);
   next.daily = { ...(local.daily || {}), ...(data.daily || {}) };
   const attempts: LocalProgress["quizAttempts"] = { ...(local.quizAttempts || {}) };
   for (const [slug, a] of Object.entries(data.quizAttempts || {})) {

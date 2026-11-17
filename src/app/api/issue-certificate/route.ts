@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { CERTIFICATE_TITLES } from "@/lib/curriculum";
 import { isLevelComplete } from "@/lib/examServer";
 import { getUserFromRequest, isSupabaseConfigured } from "@/lib/supabase";
+import { checkSuspension, suspendedMessage } from "@/lib/studentGuard";
 
 // POST /api/issue-certificate — issues one certificate per student per
 // level, persisted in the database so it verifies publicly.
@@ -40,6 +41,10 @@ export async function POST(req: Request) {
 
     const { user, client } = await getUserFromRequest(req);
     if (!user || !client) return NextResponse.json({ error: "Log in first." }, { status: 401 });
+    // B8: a suspended student cannot issue a certificate.
+    const susp = await checkSuspension(client, user.id);
+    if (susp.suspended)
+      return NextResponse.json({ error: suspendedMessage(susp.reason) }, { status: 403 });
     if (!(await isLevelComplete(client, user.id, level)))
       return NextResponse.json(
         { error: "Complete every topic and quiz in this level first." },

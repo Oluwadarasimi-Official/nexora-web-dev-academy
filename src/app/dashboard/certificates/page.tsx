@@ -4,7 +4,7 @@ import DashboardShell from "@/components/DashboardShell";
 import { Card, Alert } from "@/components/ui";
 import CertificateView from "@/components/CertificateView";
 import { LEVELS, TOPICS } from "@/lib/curriculum";
-import { loadProgress, saveProgress, pushNotification, loadSession } from "@/lib/store";
+import { loadProgress, saveProgress, pushNotification, loadSession, useSyncedProgress } from "@/lib/store";
 import { studentPost, studentGet } from "@/lib/studentClient";
 
 type ExamStatusResponse = {
@@ -15,7 +15,11 @@ type ExamStatusResponse = {
 };
 
 export default function MyCertificates() {
- const [p, setP] = useState(loadProgress());
+ // Residual from pass B: the page used a bare loadProgress() snapshot, so
+ // a certificate issued on another device never refreshed the display.
+ // useSyncedProgress() re-reads whenever progress is saved anywhere
+ // (server hydration included).
+ const p = useSyncedProgress();
  const [server, setServer] = useState<ExamStatusResponse | null>(null);
  const [msg, setMsg] = useState(""); const [err, setErr] = useState(""); const [busy, setBusy] = useState(false);
  const session = loadSession();
@@ -51,7 +55,7 @@ export default function MyCertificates() {
  const next = loadProgress();
  if (!next.certificates.some((c) => c.level === level)) next.certificates.push({ level, id: data.certificateId, title: data.title, issuedAt: data.issuedAt });
  pushNotification(next, `Certificate issued: ${data.title} (Level ${level}). Certificate ID ${data.certificateId}.`);
- saveProgress(next); setP(next);
+ saveProgress(next);
  setMsg(`Certificate issued: ${data.certificateId}. ${data.persisted ? "Recorded in the academy database — it verifies publicly." : "Recorded on this device."}`);
  await refreshServer();
  } catch (e) { setErr(e instanceof Error ? e.message : "Network error."); } finally { setBusy(false); }

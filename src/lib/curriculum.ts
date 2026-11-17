@@ -10775,7 +10775,7 @@ export const TOPICS: Topic[] = [
       "Finally, remember that how full-stack application development fits into real web development work. A professional developer does not memorise every detail — they understand the idea, practise it on a small real task, and check their work. That is exactly what the practical activity at the end of this lesson asks you to do."
     ],
     "codeLang": "typescript",
-    "code": "// Slice example: payment submission\n// migration (payments table) -> POST /api/submit-payment -> student UI -> admin review -> audit log.",
+    "code": "// Slice example: payment + activation\n// pay on WhatsApp -> owner gives a single-use code -> POST /api/redeem-code -> account activates instantly -> audit log.",
     "codeExplanation": "Work through the example line by line. It demonstrates bringing it together: a complete app from database to deployed UI. The first lines set up the context; the middle lines do the main work described by the two key ideas above; the final lines produce the result you can check in a browser, editor or terminal. Change one value, re-run it, and confirm that the change behaves as you predicted — that check is the real learning.",
     "activity": "Build a small, real example of full-stack application development: bringing it together: a complete app from database to deployed UI. Use the code example as a starting point, change it to fit your own example, and check that it works. Write down one thing that surprised you and one thing you would do differently next time. You may not mark this topic complete until you have finished the lesson and passed its quiz (7/10).",
     "mistakes": [
@@ -11066,7 +11066,7 @@ export const EXAMS = [
     "passMarkPercent": 70,
     "objectiveCount": 20,
     "theoryCount": 3,
-    "instructions": "Answer all objective questions and all theory questions. The objective section is marked automatically on the server. Theory answers are graded by an authorised examiner against the published rubric and marked as pending until graded. You must score at least 70% overall and have your theory grading completed to pass. Do not refresh or close the page during the examination; your start time is recorded on the server and the timer is enforced server-side.",
+    "instructions": "Answer all objective questions and all theory questions. The objective section is marked automatically on the server. Theory answers are graded automatically by AI against the published rubric (an authorised examiner can adjust the marks). If the grading service is unavailable, your answers stay pending until graded. You must score at least 70% overall and have your theory grading completed to pass. Do not refresh or close the page during the examination; your start time is recorded on the server and the timer is enforced server-side.",
     "rubric": "Theory rubric (each theory question, 10 marks): understanding of the concept (4), correct use of terminology and examples (3), clarity and structure of the answer (2), practical application or correct code where asked (1). Total 30 theory marks + 20 objective marks (1 each) = 50. Pass mark 70% (35/50)."
   },
   {
@@ -11076,7 +11076,7 @@ export const EXAMS = [
     "passMarkPercent": 70,
     "objectiveCount": 20,
     "theoryCount": 3,
-    "instructions": "Answer all objective questions and all theory questions. The objective section is marked automatically on the server. Theory answers are graded by an authorised examiner against the published rubric and marked as pending until graded. You must score at least 70% overall and have your theory grading completed to pass. Do not refresh or close the page during the examination; your start time is recorded on the server and the timer is enforced server-side.",
+    "instructions": "Answer all objective questions and all theory questions. The objective section is marked automatically on the server. Theory answers are graded automatically by AI against the published rubric (an authorised examiner can adjust the marks). If the grading service is unavailable, your answers stay pending until graded. You must score at least 70% overall and have your theory grading completed to pass. Do not refresh or close the page during the examination; your start time is recorded on the server and the timer is enforced server-side.",
     "rubric": "Theory rubric (each theory question, 10 marks): understanding of the concept (4), correct use of terminology and examples (3), clarity and structure of the answer (2), practical application or correct code where asked (1). Total 30 theory marks + 20 objective marks (1 each) = 50. Pass mark 70% (35/50)."
   },
   {
@@ -11086,7 +11086,7 @@ export const EXAMS = [
     "passMarkPercent": 70,
     "objectiveCount": 20,
     "theoryCount": 3,
-    "instructions": "Answer all objective questions and all theory questions. The objective section is marked automatically on the server. Theory answers are graded by an authorised examiner against the published rubric and marked as pending until graded. You must score at least 70% overall and have your theory grading completed to pass. Do not refresh or close the page during the examination; your start time is recorded on the server and the timer is enforced server-side.",
+    "instructions": "Answer all objective questions and all theory questions. The objective section is marked automatically on the server. Theory answers are graded automatically by AI against the published rubric (an authorised examiner can adjust the marks). If the grading service is unavailable, your answers stay pending until graded. You must score at least 70% overall and have your theory grading completed to pass. Do not refresh or close the page during the examination; your start time is recorded on the server and the timer is enforced server-side.",
     "rubric": "Theory rubric (each theory question, 10 marks): understanding of the concept (4), correct use of terminology and examples (3), clarity and structure of the answer (2), practical application or correct code where asked (1). Total 30 theory marks + 20 objective marks (1 each) = 50. Pass mark 70% (35/50)."
   }
 ] as const;

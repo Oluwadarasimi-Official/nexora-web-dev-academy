@@ -58,31 +58,33 @@ export async function POST(req: Request) {
           { error: "A reason is required to revoke a certificate." },
           { status: 400 }
         );
-      const { error } = await client
+      const { data, error } = await client
         .from("certificates")
         .update({ status: "revoked", revoke_reason: reason })
         .eq("certificate_id", certificateId)
-        .eq("status", "valid");
-      if (error)
+        .eq("status", "valid")
+        .select("id");
+      if (error || !data || data.length === 0)
         return NextResponse.json(
-          { error: "Could not revoke the certificate." },
-          { status: 500 }
+          { error: "Could not revoke the certificate (it may already be revoked or not exist)." },
+          { status: 409 }
         );
     } else {
       // Reissue: revoke the old record, then the student re-issues from
       // their dashboard (which creates a fresh ID). The audit trail keeps both.
-      const { error } = await client
+      const { data, error } = await client
         .from("certificates")
         .update({
           status: "revoked",
           revoke_reason: reason || "Reissued with corrections",
         })
         .eq("certificate_id", certificateId)
-        .eq("status", "valid");
-      if (error)
+        .eq("status", "valid")
+        .select("id");
+      if (error || !data || data.length === 0)
         return NextResponse.json(
-          { error: "Could not reissue the certificate." },
-          { status: 500 }
+          { error: "Could not reissue the certificate (it may already be revoked or not exist)." },
+          { status: 409 }
         );
     }
     await logAdmin(

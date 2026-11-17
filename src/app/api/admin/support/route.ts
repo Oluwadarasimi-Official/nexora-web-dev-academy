@@ -62,18 +62,19 @@ export async function POST(req: Request) {
         { error: "Provide a request ID and a valid status." },
         { status: 400 }
       );
-    const { error } = await client
+    const { data, error } = await client
       .from("support_requests")
       .update({
         admin_reply: reply || null,
         status,
         updated_at: new Date().toISOString(),
       })
-      .eq("id", requestId);
-    if (error)
+      .eq("id", requestId)
+      .select("id");
+    if (error || !data || data.length === 0)
       return NextResponse.json(
-        { error: "Could not update the request." },
-        { status: 500 }
+        { error: "Could not update the request (it may not exist)." },
+        { status: 409 }
       );
     await logAdmin(
       client,

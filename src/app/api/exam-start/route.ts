@@ -6,6 +6,7 @@ import {
   getUserFromRequest,
   isSupabaseConfigured,
 } from "@/lib/supabase";
+import { checkSuspension, suspendedMessage } from "@/lib/studentGuard";
 
 // POST /api/exam-start — starts a real, persisted examination attempt.
 // The start/expiry come from the server clock, the attempt is written to
@@ -48,6 +49,10 @@ export async function POST(req: Request) {
 
     const { user, client } = await getUserFromRequest(req);
     if (!user || !client) return NextResponse.json({ error: "Log in first." }, { status: 401 });
+    // B8: a suspended student cannot start an examination.
+    const susp = await checkSuspension(client, user.id);
+    if (susp.suspended)
+      return NextResponse.json({ error: suspendedMessage(susp.reason) }, { status: 403 });
     const { data: profile } = await client
       .from("profiles")
       .select("activated")

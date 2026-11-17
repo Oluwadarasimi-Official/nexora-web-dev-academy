@@ -47,6 +47,8 @@ const routes = [
   "src/app/api/admin/setup/route.ts","src/app/api/admin/exams/route.ts",
   "src/app/api/admin/codes/route.ts","src/app/api/admin/students/route.ts",
   "src/app/api/admin/certificates/route.ts",
+  "src/app/api/support/route.ts","src/app/api/announcements/route.ts",
+  "src/app/api/settings/route.ts","src/app/api/profile/route.ts",
   "src/app/admin/exams/page.tsx",
   "supabase/migrations/001_schema.sql","supabase/migrations/002_seed_access_codes.sql",
   "supabase/migrations/003_replace_access_codes.sql",
@@ -54,12 +56,15 @@ const routes = [
   "supabase/migrations/005_redeem_any_unused_code.sql",
   "supabase/migrations/006_student_read_quizzes.sql",
   "supabase/migrations/007_exam_persistence.sql",
+  "supabase/migrations/008_student_read_settings.sql",
 ];
 let missing = routes.filter((r) => !fs.existsSync(path.join(root, r)));
 console.log(`routes/files checked: ${routes.length}, missing: ${missing.length}`);
 if (missing.length) { console.log(missing.join("\n")); fail.push("missing files"); }
 // No plaintext codes anywhere in the repo (excluding this script's own comment is fine)
+// — and no Groq API key either: GROQ_API_KEY lives only in Vercel env vars.
 const bad = [];
+const badKeys = [];
 const walk = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) {
   if (["node_modules", ".next", ".git"].includes(e.name)) continue;
   const p = path.join(d, e.name);
@@ -69,9 +74,12 @@ const walk = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })
     // Real codes only: the format placeholder NEX-XXXX-XXXX-XXXX is not a code.
     const hits = (t.match(/NEX-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}/g) || []).filter((m) => m !== "NEX-XXXX-XXXX-XXXX");
     if (hits.length) bad.push(p);
+    if (/gsk_[A-Za-z0-9]{10,}/.test(t)) badKeys.push(p);
   } } };
 walk(root);
 console.log(`plaintext access codes in repo: ${bad.length} ${bad.length ? bad.join(", ") : "(clean) OK"}`);
 if (bad.length) fail.push("plaintext codes");
+console.log(`Groq API keys in repo: ${badKeys.length} ${badKeys.length ? badKeys.join(", ") : "(clean) OK"}`);
+if (badKeys.length) fail.push("groq api key in repo");
 if (fail.length) { console.error("FAILED:", fail.join(", ")); process.exit(1); }
 console.log("ALL CHECKS PASSED");

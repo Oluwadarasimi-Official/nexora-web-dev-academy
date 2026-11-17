@@ -2,18 +2,27 @@ import { NextResponse } from "next/server";
 import { EXAMS } from "@/lib/curriculum";
 import { buildExamQuestions, correctShuffledIndex } from "@/lib/examShuffle";
 import { getUserFromRequest, isSupabaseConfigured } from "@/lib/supabase";
+import { checkSuspension, suspendedMessage } from "@/lib/studentGuard";
+import { gradeTheoryWithGroq, computeExamResult, persistGrading } from "@/lib/aiGrading";
+import { readAcademySettings } from "@/lib/settings";
+import { examTotals } from "@/lib/examServer";
 
 // POST /api/exam-submit — marks one examination attempt, honestly.
 // Objective questions are auto-marked server-side against the shuffle key
 // stored with the attempt (the client only ever saw shuffled options, so
-// "always pick option 0" no longer works). Theory is NEVER auto-marked:
-// the answers are saved and the attempt waits for an authorised examiner
-// (see /api/admin/exams). The timer IS enforced here: the attempt's
-// server-recorded expires_at is checked, and a late submission is marked
-// timed_out and rejected — the client timer is display only.
-// Status after a successful submit is always "submitted" (theory pending).
-// "passed"/"failed" can only come from grading, never from this endpoint.
-type TheoryAnswer = { question: string; answer: string; marks: number | null };
+// "always pick option 0" no longer works). Theory is auto-marked by AI
+// (Groq, openai/gpt-oss-120b) against the published rubric — right here,
+// after the answers are stored. If the AI grading service is unavailable
+// (no GROQ_API_KEY, call failed, reply would not parse), the attempt
+// stays "submitted" (awaiting grading) exactly as before: the submission
+// still succeeds, no marks are ever fabricated, and an authorised
+// examiner (or the admin "AI grade" action) grades it later. The timer
+// IS enforced here: the attempt's server-recorded expires_at is checked,
+// and a late submission is marked timed_out and rejected — the client
+// timer is display only.
+// Status after a successful submit is "submitted" (theory pending) unless
+// the AI grading succeeded, in which case it is "passed"/"failed".
+type TheoryAnswer = { question: string; answer: string; marks: number | null; feedback?: string | null };
 
 function theoryStatusText(answers: TheoryAnswer[], theoryCount: number): string {
   const answered = answers.filter((a) => a.answer.trim().length >= 20).length;
@@ -73,13 +82,17 @@ export async function POST(req: Request) {
         theoryStatus: theoryStatusText(theoryAnswers, exam.theoryCount),
         status: "submitted",
         persisted: false,
-        note: "Theory answers are graded by an authorised examiner against the published rubric. No theory marks are fabricated by this endpoint.",
+        note: "Theory answers are graded automatically by AI against the published rubric when the grading service is available; otherwise an authorised examiner grades them. No theory marks are fabricated by this endpoint.",
       });
     }
 
     // ---- Connected flow.
     const { user, client } = await getUserFromRequest(req);
     if (!user || !client) return NextResponse.json({ error: "Log in first." }, { status: 401 });
+    // B8: a suspended student cannot submit an examination.
+    const susp = await checkSuspension(client, user.id);
+    if (susp.suspended)
+      return NextResponse.json({ error: suspendedMessage(susp.reason) }, { status: 403 });
     if (!attemptId || attemptId.startsWith("local-"))
       return NextResponse.json({ error: "Unknown examination attempt." }, { status: 404 });
     const { data: attempt } = await client
@@ -160,6 +173,69 @@ export async function POST(req: Request) {
       .eq("id", attempt.id);
     if (error)
       return NextResponse.json({ error: "Could not save the examination." }, { status: 500 });
+
+    // AI auto-marking: grade the stored theory answers now. A null
+    // result (no key / service failed / bad reply) is the designed
+    // fallback — the attempt simply stays "submitted" and the student
+    // sees "awaiting grading". Nothing is fabricated.
+    const ai = await gradeTheoryWithGroq({
+      examTitle: exam.title,
+      rubric: exam.rubric,
+      theoryCount: exam.theoryCount,
+      answers: theoryAnswers,
+    });
+    if (ai) {
+      const graded: TheoryAnswer[] = theoryAnswers.map((a, i) => ({
+        question: a.question,
+        answer: a.answer,
+        marks: ai.marks[i] ?? 0,
+        feedback: ai.feedback[i] ?? "",
+      }));
+      const theoryScore = ai.marks.reduce((s, m) => s + m, 0);
+      const settings = await readAcademySettings(client);
+      const { totalPossible } = examTotals(level);
+      const result = computeExamResult(
+        objectiveScore,
+        theoryScore,
+        totalPossible,
+        settings.examPassMarkPercent
+      );
+      const saved = await persistGrading(client, attempt.id, ["submitted"], {
+        theory_answers: graded,
+        theory_score: theoryScore,
+        total_score: result.totalScore,
+        status: result.status,
+      });
+      if (saved) {
+        try {
+          await client.from("notifications").insert({
+            student_id: user.id,
+            text:
+              result.status === "passed"
+                ? `Your Level ${level} examination has been graded (AI): PASSED (${result.totalScore}/${result.totalPossible}). Your certificate can now be issued from My Certificates.`
+                : `Your Level ${level} examination has been graded (AI): not passed (${result.totalScore}/${result.totalPossible}, pass mark ${result.passThreshold}). Revise the level and try again when ready.`,
+            kind: "exam",
+          });
+        } catch {}
+        return NextResponse.json({
+          ok: true,
+          level,
+          objectiveScore,
+          objectiveTotal,
+          theoryScore,
+          totalScore: result.totalScore,
+          totalPossible: result.totalPossible,
+          passThreshold: result.passThreshold,
+          theoryStatus: "graded by AI",
+          status: result.status,
+          grading: "ai",
+          persisted: true,
+          note: "Theory answers were graded automatically by AI against the published rubric.",
+        });
+      }
+      // The row changed under us (already graded) — fall through to the
+      // submitted response rather than reporting a second grading.
+    }
     return NextResponse.json({
       ok: true,
       level,
@@ -168,7 +244,7 @@ export async function POST(req: Request) {
       theoryStatus: theoryStatusText(theoryAnswers, exam.theoryCount),
       status: "submitted",
       persisted: true,
-      note: "Theory answers are graded by an authorised examiner against the published rubric. No theory marks are fabricated by this endpoint.",
+      note: "Theory answers are graded automatically by AI against the published rubric when the grading service is available; otherwise an authorised examiner grades them. No theory marks are fabricated by this endpoint.",
     });
   } catch {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });

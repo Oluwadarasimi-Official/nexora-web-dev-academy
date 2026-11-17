@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AuthShell, AuthMessages, inputCls, labelCls, submitCls, useAuthMessage, supabaseSignUp, localRegisterAccount, isConfiguredNote } from "@/components/AuthForm";
+import { AuthShell, AuthMessages, inputCls, labelCls, submitCls, useAuthMessage, supabaseSignUp, isConfiguredNote } from "@/components/AuthForm";
 
 export default function Register() {
  const router = useRouter();
@@ -19,7 +19,6 @@ export default function Register() {
  try {
  const res = await supabaseSignUp(name.trim(), email.trim().toLowerCase(), password);
  if (!res.ok) { setError(res.error || "Registration failed. If you already have an account, try logging in."); return; }
- if (res.local) { if (!localRegisterAccount(name.trim(), email.trim().toLowerCase(), password)) { setError("An account with this email already exists. Try logging in."); return; } }
  setInfo("Account created. Redirecting to your student dashboard…");
  setTimeout(() => router.push("/dashboard"), 600);
  } finally { setBusy(false); }

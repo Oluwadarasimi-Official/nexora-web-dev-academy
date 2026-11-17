@@ -74,17 +74,18 @@ export async function POST(req: Request) {
         { error: "A reason is required to suspend a student." },
         { status: 400 }
       );
-    const { error } = await client
+    const { data, error } = await client
       .from("profiles")
       .update({
         suspended: action === "suspend",
         suspension_reason: action === "suspend" ? reason : null,
       })
-      .eq("id", studentId);
-    if (error)
+      .eq("id", studentId)
+      .select("id");
+    if (error || !data || data.length === 0)
       return NextResponse.json(
-        { error: "Could not update the student." },
-        { status: 500 }
+        { error: "Could not update the student (they may not exist)." },
+        { status: 409 }
       );
     await logAdmin(
       client,

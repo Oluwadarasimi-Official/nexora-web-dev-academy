@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSupabase, isSupabaseConfigured } from "@/lib/supabase";
+import { checkSuspension, suspendedMessage } from "@/lib/studentGuard";
 import { rateLimited, clientIp } from "@/lib/data";
 
 // POST /api/redeem-code — atomic redemption via redeem_code() (migration 005).
@@ -25,6 +26,10 @@ export async function POST(req: Request) {
     if (!client) return NextResponse.json({ error: "Service unavailable." }, { status: 503 });
     const { data: { user } } = await client.auth.getUser(token);
     if (!user) return NextResponse.json({ error: "Log in first." }, { status: 401 });
+    // B8: a suspended student cannot redeem (and so cannot activate).
+    const susp = await checkSuspension(client, user.id);
+    if (susp.suspended)
+      return NextResponse.json({ error: suspendedMessage(susp.reason) }, { status: 403 });
     const { data, error } = await client.rpc("redeem_code", { p_code: code, p_student: user.id });
     if (error) return NextResponse.json({ error: "Something went wrong. Try again." }, { status: 500 });
     if (data === "ok") return NextResponse.json({ ok: true, activated: true });

@@ -17,7 +17,7 @@ export async function GET(req: Request) {
   if (!user || !client) return NextResponse.json({ error: "Log in first." }, { status: 401 });
   const { data: attempts } = await client
     .from("examination_attempts")
-    .select("id,level_id,started_at,expires_at,submitted_at,objective_score,theory_score,total_score,status")
+    .select("id,level_id,started_at,expires_at,submitted_at,objective_score,theory_score,total_score,status,theory_answers")
     .eq("student_id", user.id)
     .order("started_at", { ascending: false });
   const { data: certs } = await client
@@ -37,10 +37,22 @@ export async function GET(req: Request) {
       submittedAt: string | null;
       startedAt: string;
       expiresAt: string;
+      // The student's own theory marks + AI feedback, so the graded
+      // result (and why each answer scored what it did) shows on the
+      // Examinations page without trusting local progress.
+      theoryAnswers: { question: string; marks: number | null; feedback: string | null }[];
+      aiGraded: boolean;
     }
   > = {};
   for (const a of attempts ?? []) {
     if (attemptsByLevel[a.level_id]) continue;
+    const theoryAnswers: { question: string; marks: number | null; feedback: string | null }[] = (
+      Array.isArray(a.theory_answers) ? a.theory_answers : []
+    ).map((t: { question?: unknown; marks?: unknown; feedback?: unknown }) => ({
+      question: typeof t.question === "string" ? t.question : "",
+      marks: typeof t.marks === "number" ? t.marks : null,
+      feedback: typeof t.feedback === "string" ? t.feedback : null,
+    }));
     attemptsByLevel[a.level_id] = {
       id: a.id,
       status: a.status,
@@ -50,6 +62,8 @@ export async function GET(req: Request) {
       submittedAt: a.submitted_at,
       startedAt: a.started_at,
       expiresAt: a.expires_at,
+      theoryAnswers,
+      aiGraded: theoryAnswers.some((t) => t.feedback != null && t.feedback.trim() !== ""),
     };
   }
   const levelComplete: Record<number, boolean> = {};

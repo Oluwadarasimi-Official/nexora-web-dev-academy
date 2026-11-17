@@ -19,6 +19,10 @@ export default function Page() {
   const [revokeId, setRevokeId] = useState<string | null>(null);
   const [revokeReason, setRevokeReason] = useState("");
   const [busy, setBusy] = useState(false);
+  // B10: freshly generated codes, shown ONCE for the owner to copy.
+  const [genCount, setGenCount] = useState(10);
+  const [newCodes, setNewCodes] = useState<string[]>([]);
+  const [copied, setCopied] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -45,6 +49,23 @@ export default function Page() {
   );
   const unused = codes.filter((c) => c.status === "unused");
   const assignableStudents = students.filter((s) => !s.suspended);
+
+  async function generate() {
+    setBusy(true);
+    setErr("");
+    setMsg("");
+    setCopied(false);
+    try {
+      const data = await adminPost<{ codes: string[]; count: number }>("/api/admin/codes", { action: "generate", count: genCount });
+      setNewCodes(data.codes);
+      setMsg(`${data.count} new access codes generated. Copy them now — they are shown once and never stored.`);
+      await load();
+    } catch (e: unknown) {
+      setErr(e instanceof AdminApiError ? e.message : "Could not generate codes.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function assign() {
     if (!assignStudent || !assignCode) {
@@ -90,14 +111,40 @@ export default function Page() {
   }
 
   return (
-    <AdminShell title="Access-Code Management" intro="30 initial codes (hashes only). Import is idempotent; full codes are never shown in normal views or logs.">
+    <AdminShell title="Access-Code Management" intro="Access codes (hashes only). Generate a new batch when you run low — full codes are shown once and never stored.">
       {err && <div className="mb-4"><Alert kind="error">{err}</Alert></div>}
       {msg && <div className="mb-4"><Alert kind="success">{msg}</Alert></div>}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card><p className="text-xs uppercase tracking-widest text-slate-500">Total codes</p><p className="mt-1 text-2xl font-bold text-navy">{loading ? "…" : counts.total}</p><p className="text-xs text-slate-500">Fresh batch 2, migration 003 (old batch wiped).</p></Card>
+        <Card><p className="text-xs uppercase tracking-widest text-slate-500">Total codes</p><p className="mt-1 text-2xl font-bold text-navy">{loading ? "…" : counts.total}</p><p className="text-xs text-slate-500">Numbered by creation order — the same number in the list and in the dropdown.</p></Card>
         <Card><p className="text-xs uppercase tracking-widest text-slate-500">Redeemed</p><p className="mt-1 text-2xl font-bold text-navy">{loading ? "…" : counts.redeemed}</p><p className="text-xs text-slate-500">{counts.assigned} assigned and waiting · {counts.revoked} revoked.</p></Card>
         <Card><p className="text-xs uppercase tracking-widest text-slate-500">Unused</p><p className="mt-1 text-2xl font-bold text-navy">{loading ? "…" : counts.unused}</p><p className="text-xs text-slate-500">Available to give out on WhatsApp.</p></Card>
       </div>
+      <Card className="mt-4">
+        <h3 className="font-bold text-navy">Generate a new batch</h3>
+        <p className="mt-2 text-sm text-slate-600">When unused codes run low, mint more here. Only SHA-256 hashes are stored — the codes below are the only time the plaintext ever exists, so copy them before you leave this page. Anyone with a code can activate an account.</p>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <label className="text-sm font-semibold text-navy" htmlFor="gen-count">How many?</label>
+          <input id="gen-count" type="number" min={1} max={30} className="w-20 input-std" value={genCount} onChange={(e) => setGenCount(Math.min(30, Math.max(1, Number(e.target.value) || 1)))} />
+          <button className="btn-gold px-4 py-2 text-sm disabled:opacity-50" disabled={busy} onClick={generate}>
+            {busy ? "Working…" : "Generate Codes"}
+          </button>
+        </div>
+        {newCodes.length > 0 && (
+          <div className="mt-4 rounded-2xl border border-gold/60 bg-[#fdf8ec] p-4">
+            <p className="text-sm font-bold text-navy">New codes — copy them now. They will not be shown again.</p>
+            <ol className="mt-2 space-y-1 text-sm font-mono text-navy">
+              {newCodes.map((c, i) => (<li key={c}>{i + 1}. {c}</li>))}
+            </ol>
+            <button
+              className="btn-sky mt-3 px-4 py-2 text-sm"
+              onClick={async () => { try { await navigator.clipboard.writeText(newCodes.join("\n")); setCopied(true); } catch { setCopied(false); } }}
+            >
+              {copied ? "Copied ✓" : "Copy All Codes"}
+            </button>
+            <button className="btn-outline ml-2 px-4 py-2 text-sm" onClick={() => setNewCodes([])}>Hide</button>
+          </div>
+        )}
+      </Card>
       <Card className="mt-4">
         <h3 className="font-bold text-navy">Mark a code as given</h3>
         <p className="mt-2 text-sm text-slate-600">After you give a code to a student on WhatsApp, mark it here so you never hand the same code out twice. Any unused code works for any student — this is only your record.</p>
@@ -110,8 +157,8 @@ export default function Page() {
           </select>
           <select className="input-std" value={assignCode} onChange={(e) => setAssignCode(e.target.value)} aria-label="Unused code">
             <option value="">Choose an unused code…</option>
-            {unused.map((c, i) => (
-              <option key={c.id} value={c.id}>Code #{i + 1} (created {new Date(c.created_at).toLocaleDateString()})</option>
+            {unused.map((c) => (
+              <option key={c.id} value={c.id}>Code #{codes.findIndex((x) => x.id === c.id) + 1} (created {new Date(c.created_at).toLocaleDateString()})</option>
             ))}
           </select>
         </div>
@@ -191,11 +238,11 @@ export default function Page() {
       <Card className="mt-4">
         <h3 className="font-bold text-navy">Rules</h3>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-600">
-          <li>Only hashes are stored (SHA-256). Plaintext codes exist only in the owner&apos;s confidential specification PDF.</li>
+          <li>Only hashes are stored (SHA-256). Plaintext codes are shown once when a batch is generated — copy them then. If the list is lost, the codes cannot be recovered; generate a new batch instead.</li>
           <li>Import is idempotent: re-running migration 003 adds nothing (ON CONFLICT DO NOTHING).</li>
           <li>Mark a code as given after you hand it out on WhatsApp. Revoke only an unused code, with a reason.</li>
           <li>Redemption is atomic (redeem_code() in migration 005): simultaneous attempts cannot redeem the same code twice.</li>
-          <li>When all 30 are redeemed, new activations are blocked with a contact-admin message. Only the owner may authorise a new batch.</li>
+          <li>When no unused codes remain, new activations are blocked with a contact-admin message. Generate a new batch above.</li>
         </ul>
       </Card>
     </AdminShell>

@@ -20,7 +20,16 @@ export default function Login() {
  // Admins are routed to the admin portal, students to the dashboard.
  const sb = getBrowserSupabase();
  const { data } = sb ? await sb.auth.getSession() : { data: { session: null } };
- const target = await resolvePostLoginTarget(data?.session?.access_token ?? null);
+ // B21: a network/5xx failure while checking "am I admin?" throws here
+ // and is shown as an error — an admin is never silently landed on the
+ // student portal because of a flaky connection.
+ let target: string;
+ try {
+ target = await resolvePostLoginTarget(data?.session?.access_token ?? null);
+ } catch (e) {
+ setError(e instanceof Error ? e.message : "Could not confirm your account type. Try signing in again.");
+ return;
+ }
  setTimeout(() => router.push(target), 300);
  } finally { setBusy(false); }
  }

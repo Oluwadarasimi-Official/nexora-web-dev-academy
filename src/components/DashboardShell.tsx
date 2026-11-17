@@ -104,7 +104,15 @@ export default function DashboardShell({ children, title }: { children: React.Re
  <Link key={href + label} href={href} className={`shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium transition ${pathname === href ? "border-gold bg-gold text-ink" : "chip text-navy hover:border-gold hover:text-gold-dark"}`}>{label}</Link>
  ))}
  </nav>
- {!progress.activated && (
+ {/* B8: a suspended account sees a plain banner on every student page.
+     The action routes enforce the suspension server-side; this is only
+     the visible explanation. The activation banner is hidden while
+     suspended — redeeming a code is blocked for suspended accounts too. */}
+ {progress.suspended ? (
+ <div className="mt-3 rounded-[1.75rem] border border-red-300 bg-red-50 px-4 py-2.5 text-sm text-red-800 shadow-[0_8px_24px_rgba(10,42,94,0.05)]">
+ Your account is suspended{progress.suspensionReason ? `: ${progress.suspensionReason}` : ""}. Quizzes, topic completion, examinations and certificates are paused until the academy lifts the suspension. Contact the academy on WhatsApp if you think this is a mistake.
+ </div>
+ ) : !progress.activated && (
  <div className="mt-3 rounded-[1.75rem] border border-gold/40 bg-[#fdf8ec] px-4 py-2.5 text-sm text-navy shadow-[0_8px_24px_rgba(10,42,94,0.05)]">
  Your account is not activated yet — lessons are locked until you redeem an access code. Pay on WhatsApp, get your code from the owner, and redeem it at <Link className="font-semibold underline" href="/dashboard/payment">Payment &amp; Activation</Link>.
  </div>

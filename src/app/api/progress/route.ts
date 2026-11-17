@@ -22,13 +22,19 @@ export async function GET(req: Request) {
     if (!user || !client) {
       return NextResponse.json({ error: "Log in first." }, { status: 401 });
     }
-    const [profile, progress, daily, attempts, certs, notes] = await Promise.all([
-      client.from("profiles").select("activated").eq("id", user.id).maybeSingle(),
+    const [profile, progress, daily, attempts, certs, notes, views] = await Promise.all([
+      client.from("profiles").select("activated,suspended,suspension_reason").eq("id", user.id).maybeSingle(),
       client.from("lesson_progress").select("topic_slug").eq("student_id", user.id),
       client.from("daily_learning_limits").select("lagos_date,new_topics_completed").eq("student_id", user.id),
       client.from("quiz_attempts").select("topic_slug,score,passed,submitted_at").eq("student_id", user.id).order("submitted_at", { ascending: false }),
       client.from("certificates").select("certificate_id,level_id,title,issued_at").eq("student_id", user.id).eq("status", "valid").order("issued_at", { ascending: false }),
       client.from("notifications").select("id,text,read,created_at").eq("student_id", user.id).order("created_at", { ascending: false }).limit(50),
+      // Lesson-view gate: topic slugs whose lesson the student has opened.
+      // Supabase resolves a missing table as { data: null, error } (not a
+      // throw), so until migration 009 is applied this is simply [] and
+      // the rest of the progress still loads — quizzes then stay locked
+      // ("Open the course first") until 009 lands, by design.
+      client.from("lesson_views").select("topic_slug").eq("student_id", user.id),
     ]);
     if (profile.error) {
       return NextResponse.json({ error: "Could not load your progress." }, { status: 500 });
@@ -51,7 +57,14 @@ export async function GET(req: Request) {
     return NextResponse.json({
       ok: true,
       activated: Boolean(profile.data?.activated),
+      // B8: suspension is part of the server state the app hydrates, so
+      // the shell can show a plain "account suspended" banner.
+      suspended: Boolean(profile.data?.suspended),
+      suspensionReason: (profile.data?.suspension_reason as string | null) ?? null,
       completedTopics: (progress.data ?? []).map((r) => r.topic_slug as string),
+      // Lesson-view gate: the level/quizzes/quiz pages render their
+      // "Open the course first" lock states from this, no extra round trip.
+      openedLessons: (views.data ?? []).map((r) => r.topic_slug as string),
       daily: dailyMap,
       quizAttempts,
       certificates: (certs.data ?? []).map((c) => ({
