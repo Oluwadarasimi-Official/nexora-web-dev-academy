@@ -4,7 +4,14 @@
 **Target live URL:** https://nexorawebdevacademy.vercel.app — **NOT live yet. Do not share it as live until the parent deploys and tests it.**
 **Student portal:** https://nexorawebdevacademy.vercel.app/dashboard
 **Admin portal:** https://nexorawebdevacademy.vercel.app/admin (never linked from public or student pages)
-**Repo:** to be created by the parent from `~/workspace/nexora-web-dev-academy`
+**Repo:** https://github.com/Oluwadarasimi-Official/nexora-web-dev-academy (public, created + pushed 17 Nov 2026, commit 8a5560b)
+
+## Deployment status — 17 November 2026 (parent run, after the build)
+
+- **GitHub: DONE.** Repo created and pushed: https://github.com/Oluwadarasimi-Official/nexora-web-dev-academy
+- **Vercel: BLOCKED — owner action needed (do not present the URL as the new app yet).** The URL https://nexorawebdevacademy.vercel.app exists under the **Tech Nova Academy** team and currently serves an old redirect page to a protected (SSO-locked) deployment — that is NOT this new build. Every Vercel operation from this workspace on that team scope returns **403 forbidden** (list_projects, get_project, get_deployment, create_git_project all tested 17 Nov 2026). The MCP connection has identity/session scopes only, `list_teams` returns empty, and no `authorize_team_access` tool exists — re-running the same calls will not fix it. The real Vercel CLI on this machine has no credentials (`vercel whoami` → logged out).
+  - **Owner action (pick one):** (a) in the Vercel dashboard, open the existing `nexorawebdevacademy` project and link/import the GitHub repo `Oluwadarasimi-Official/nexora-web-dev-academy` (auto-deploy then builds every push); or (b) grant the Muse Vercel integration access to the Tech Nova Academy team; or (c) create a Vercel token (Dashboard → Account/Team Settings → Tokens) and give it to Muse through the secure entry, so the real CLI can deploy. After access is restored: set env vars `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `ADMIN_SETUP_TOKEN` (Production), deploy, then verify the live URL serves the new app (not the old redirect) and turn off deployment protection/SSO if it blocks public visitors.
+- **Supabase: BLOCKED — owner action needed.** The stored management credential returns **HTTP 403** for project `fodwlmprqreheqiskowy` (insufficient privileges on that project), so migrations could NOT be applied from this workspace. **Owner action:** in the Supabase dashboard for that project, open the SQL Editor and run, in order: `supabase/migrations/001_schema.sql`, then `supabase/migrations/002_seed_access_codes.sql`, then `supabase/seed-curriculum.sql`; verify counts (topics 73, quiz questions 730, examinations 3, access codes 30 unused). Then set Auth site URL + redirect allow-list to the production domain. Until this is done the app runs in its clearly-labelled local demo mode, not connected mode.
 **Supabase project:** https://fodwlmprqreheqiskowy.supabase.co (verify ownership before applying anything)
 
 ## What was built
