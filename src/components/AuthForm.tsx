@@ -4,13 +4,17 @@ import { getBrowserSupabase, isSupabaseConfigured } from "@/lib/supabase";
 import { saveSession } from "@/lib/store";
 import { Alert } from "@/components/ui";
 
+/* Auth pages are one clean full-screen composition: the card is centred
+ in the viewport (header top, tidy footer pinned at the bottom), so the
+ whole card is visible at once on a 390px phone — no scrolling, no dead
+ empty space, no footer floating mid-page. */
 export function AuthShell({ title, intro, children }: { title: string; intro: string; children: React.ReactNode }) {
  return (
- <section className="mx-auto max-w-lg px-4 py-8">
- <div className="card rounded-2xl p-6">
- <h1 className="text-center text-2xl font-bold text-navy">{title}</h1>
- <p className="mt-2 text-center text-sm text-slate-600">{intro}</p>
- <div className="mt-6">{children}</div>
+ <section className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center justify-center px-4 py-2">
+ <div className="card w-full rounded-2xl p-4 sm:p-6">
+ <h1 className="text-center text-xl font-bold tracking-tight text-navy sm:text-2xl">{title}</h1>
+ <p className="mt-1 text-center text-sm leading-relaxed text-slate-600">{intro}</p>
+ <div className="mt-4">{children}</div>
  </div>
  </section>
  );
@@ -60,6 +64,21 @@ export async function supabaseSignIn(email: string, password: string) {
  saveSession({ name, email, id: data.user!.id });
  return { ok: true, local: false };
 }
+
+/* Post-login routing: administrators go to /admin, students to /dashboard.
+ The check reuses the existing admin endpoint (GET /api/admin/overview with
+ the caller's session token — 200 means admin). ANY failure (no token, 401,
+ 403, network error) falls back to /dashboard, so the student flow can
+ never break because of this check. */
+export async function resolvePostLoginTarget(accessToken: string | null): Promise<string> {
+ if (!accessToken) return "/dashboard";
+ try {
+ const res = await fetch("/api/admin/overview", { headers: { Authorization: `Bearer ${accessToken}` } });
+ return res.ok ? "/admin" : "/dashboard";
+ } catch {
+ return "/dashboard";
+ }
+}
 export async function supabaseSignOut() {
  const sb = getBrowserSupabase();
  if (sb) { try { await sb.auth.signOut(); } catch {} }
@@ -77,5 +96,5 @@ export function localRegisterAccount(name: string, email: string, password: stri
 export function isConfiguredNote() {
  return isSupabaseConfigured()
  ? "Connected to the academy's Supabase project."
- : "Your account is stored on this device for now. Your learning progress is still saved on this device.";
+ : "Your account is stored on this device for now.";
 }

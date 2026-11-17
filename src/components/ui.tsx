@@ -5,8 +5,11 @@ import { SidebarMenu } from "@/components/Sidebar";
 
 /* Official logo — the true circular-cropped image (public/logo-circle.png,
  made from public/logo.png, which is untouched). The image itself is the
- circle: no padded card, no wrapper ring. It appears ONLY as this small
- circle in the top-left of the header, aligned with the brand text. */
+ circle, and it is rendered on a solid white disc with a gold hairline and
+ a soft shadow so the circular edge is unmistakable on any background —
+ on a phone the bare emblem used to read as a rounded square. It appears
+ ONLY as this small circle in the top-left of the header, aligned with
+ the brand text. */
 export function Logo({ size = 40 }: { size?: number }) {
  return (
  <span className="inline-flex shrink-0 items-center gap-2.5">
@@ -16,7 +19,7 @@ export function Logo({ size = 40 }: { size?: number }) {
  width={size}
  height={size}
  style={{ width: size, height: size }}
- className="rounded-full object-cover ring-1 ring-slate-900/10"
+ className="rounded-full bg-white object-cover shadow-[0_2px_10px_rgba(10,42,94,0.22)] ring-1 ring-gold/60"
  priority
  />
  <span className="leading-tight">
@@ -43,7 +46,7 @@ export function Header() {
  ];
  return (
  <header className="glass-header sticky top-0 z-40">
- <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-2.5">
+ <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-2">
  <Link href="/" aria-label="Nexora Web Dev. Academy — home"><Logo /></Link>
  <div className="flex flex-wrap items-center gap-2">
  <nav className="hidden items-center gap-x-5 text-sm font-medium text-navy md:flex" aria-label="Main navigation">
@@ -75,15 +78,15 @@ export function Header() {
  top-left of the header. All Explore / contact links live in the sidebar. */
 export function Footer() {
  return (
- <footer className="mt-10 bg-navy text-white">
- <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-6">
+ <footer className="mt-auto bg-navy text-white">
+ <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
  <div>
- <p className="text-lg font-extrabold tracking-tight">NEXORA <span className="font-semibold text-champagne">Web Dev. Academy</span></p>
- <p className="mt-1 max-w-md text-sm text-sky-100">Learn. Build. Innovate. — {AUTHORITIES.join(" & ")}.</p>
+ <p className="text-base font-extrabold tracking-tight">NEXORA <span className="font-semibold text-champagne">Web Dev. Academy</span></p>
+ <p className="mt-0.5 max-w-md text-sm text-sky-100">Learn. Build. Innovate. — {AUTHORITIES.join(" & ")}.</p>
  </div>
  <p className="max-w-md text-xs text-sky-100">{ACADEMY_NAME} does not claim government accreditation, university affiliation or external endorsement.</p>
  </div>
- <div className="border-t border-white/15 py-3 text-center text-xs text-sky-100">© {new Date().getFullYear()} {ACADEMY_NAME} — Official Darax &amp; Official Obafemix.</div>
+ <div className="border-t border-white/15 py-1.5 text-center text-xs text-sky-100">© {new Date().getFullYear()} {ACADEMY_NAME} — Official Darax &amp; Official Obafemix.</div>
  </footer>
  );
 }

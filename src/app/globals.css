@@ -16,14 +16,17 @@
 html { scroll-behavior: smooth; overflow-x: clip; }
 body {
   overflow-x: clip;
-  background-color: #fffdf5;
+  background-color: #f7f9fd;
   background-image:
-    radial-gradient(900px 520px at 88% -8%, rgba(201, 162, 39, 0.09), rgba(201, 162, 39, 0) 62%),
-    radial-gradient(900px 620px at -10% 108%, rgba(30, 111, 217, 0.08), rgba(30, 111, 217, 0) 62%),
-    linear-gradient(180deg, #fffdf5 0%, #fdf9ec 52%, #f4f8fd 100%);
+    radial-gradient(820px 520px at 92% -10%, rgba(201, 162, 39, 0.20), rgba(201, 162, 39, 0) 62%),
+    radial-gradient(820px 560px at -12% 96%, rgba(30, 111, 217, 0.18), rgba(30, 111, 217, 0) 62%),
+    radial-gradient(640px 480px at 50% 118%, rgba(201, 162, 39, 0.10), rgba(201, 162, 39, 0) 65%),
+    linear-gradient(180deg, #fdfaf2 0%, #f7f9fd 45%, #edf2fb 100%);
   background-attachment: fixed;
   color: #334155;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
   min-height: 100vh;
 }
 a { overflow-wrap: anywhere; }
@@ -34,62 +37,68 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
 pre { white-space: pre-wrap; word-break: break-word; }
 ::selection { background: rgba(201, 162, 39, 0.25); color: #0a2a5e; }
 
-/* ---- Real frosted-glass card system ---- */
+/* ---- Real frosted-glass card system (JAMB Prep tokens: gradient fill +
+   strong blur so the frost is unmistakable, even on a phone; Roemichs
+   polish: cool blue-white paper, generous radii, deep soft shadows,
+   airy line-height) ---- */
 .card {
-  background: rgba(255, 255, 255, 0.62);
-  -webkit-backdrop-filter: blur(18px) saturate(1.45);
-  backdrop-filter: blur(18px) saturate(1.45);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.62));
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  backdrop-filter: blur(24px) saturate(1.5);
   border: 1px solid rgba(255, 255, 255, 0.85);
-  border-radius: 1rem;
+  border-radius: 1.5rem;
   box-shadow:
     0 0 0 1px rgba(10, 42, 94, 0.05),
     0 1px 2px rgba(10, 42, 94, 0.05),
-    0 12px 32px rgba(10, 42, 94, 0.09),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    0 18px 50px rgba(20, 48, 91, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 .card-hover:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   border-color: rgba(201, 162, 39, 0.55);
   box-shadow:
     0 0 0 1px rgba(201, 162, 39, 0.18),
     0 4px 10px rgba(10, 42, 94, 0.07),
-    0 18px 38px rgba(10, 42, 94, 0.11),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    0 22px 55px rgba(20, 48, 91, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 .card-soft {
-  background: rgba(253, 248, 236, 0.62);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
-  backdrop-filter: blur(16px) saturate(1.4);
+  background: linear-gradient(145deg, rgba(253, 248, 236, 0.82), rgba(253, 248, 236, 0.58));
+  -webkit-backdrop-filter: blur(20px) saturate(1.45);
+  backdrop-filter: blur(20px) saturate(1.45);
   border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: 1rem;
+  border-radius: 1.5rem;
   box-shadow:
     0 0 0 1px rgba(10, 42, 94, 0.04),
-    0 8px 24px rgba(10, 42, 94, 0.07),
-    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    0 12px 35px rgba(29, 62, 109, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 .chip {
-  background: rgba(255, 255, 255, 0.6);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.6));
   -webkit-backdrop-filter: blur(12px) saturate(1.4);
   backdrop-filter: blur(12px) saturate(1.4);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.85);
   box-shadow: 0 0 0 1px rgba(10, 42, 94, 0.05);
   color: #0a2a5e;
 }
 /* Frosted sticky header + hero band — the backdrop shows through. */
 .glass-header {
-  background: rgba(255, 253, 245, 0.72);
-  -webkit-backdrop-filter: blur(18px) saturate(1.5);
-  backdrop-filter: blur(18px) saturate(1.5);
+  background: linear-gradient(145deg, rgba(255, 253, 245, 0.88), rgba(255, 253, 245, 0.66));
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  backdrop-filter: blur(22px) saturate(1.5);
   border-bottom: 1px solid rgba(255, 255, 255, 0.7);
   box-shadow: 0 1px 0 rgba(10, 42, 94, 0.04), 0 8px 24px rgba(10, 42, 94, 0.06);
 }
 .glass-hero {
-  background: rgba(255, 255, 255, 0.45);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  backdrop-filter: blur(20px) saturate(1.4);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.38));
+  -webkit-backdrop-filter: blur(22px) saturate(1.45);
+  backdrop-filter: blur(22px) saturate(1.45);
   border-bottom: 1px solid rgba(255, 255, 255, 0.65);
 }
+/* Horizontal scroll rows (tabs) — no visible scrollbar, no wrap. */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
 .btn-gold {
   display: inline-block;
   background: #c9a227;
@@ -115,13 +124,13 @@ pre { white-space: pre-wrap; word-break: break-word; }
 .btn-sky:hover { background: rgba(239, 246, 255, 0.85); transform: translateY(-1px); }
 .input-std {
   width: 100%;
-  border-radius: 0.6rem;
+  border-radius: 0.9rem;
   border: 1px solid rgba(10, 42, 94, 0.14);
   background: rgba(255, 255, 255, 0.72);
   -webkit-backdrop-filter: blur(10px) saturate(1.3);
   backdrop-filter: blur(10px) saturate(1.3);
   color: #0a2a5e;
-  padding: 0.5rem 0.75rem;
+  padding: 0.6rem 0.9rem;
 }
 .input-std::placeholder { color: #94a3b8; }
 .input-std:focus { border-color: #c9a227; outline: none; box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.2); }
@@ -136,9 +145,9 @@ select.input-std option { background: #ffffff; color: #0a2a5e; }
 .drawer-backdrop { transition: opacity 0.3s ease; }
 .drawer-panel {
   transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.24, 1), visibility 0s linear 0.32s;
-  background: rgba(255, 255, 255, 0.8);
-  -webkit-backdrop-filter: blur(22px) saturate(1.5);
-  backdrop-filter: blur(22px) saturate(1.5);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.68));
+  -webkit-backdrop-filter: blur(26px) saturate(1.5);
+  backdrop-filter: blur(26px) saturate(1.5);
   border-left: 1px solid rgba(255, 255, 255, 0.75);
   box-shadow: -18px 0 50px rgba(10, 42, 94, 0.16), inset 1px 0 0 rgba(255, 255, 255, 0.7);
 }

@@ -20,7 +20,7 @@ export default function ForgotPassword() {
  return (
  <AuthShell title="Forgot Password" intro="Enter your registered email address and we will send you a password reset link.">
  <AuthMessages error={error} info={info} />
- <form onSubmit={submit} className="space-y-4" noValidate>
+ <form onSubmit={submit} className="space-y-3" noValidate>
  <div><label className={labelCls} htmlFor="email">Email address</label><input id="email" type="email" className={inputCls} value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required /></div>
  <button className={submitCls} disabled={busy}>{busy ? "Sending…" : "Send Reset Link"}</button>
  </form>

@@ -24,7 +24,7 @@ export default function ResetPassword() {
  return (
  <AuthShell title="Reset Password" intro="Choose a new password for your account. Open this page from the reset link sent to your email.">
  <AuthMessages error={error} info={info} />
- <form onSubmit={submit} className="space-y-4" noValidate>
+ <form onSubmit={submit} className="space-y-3" noValidate>
  <div><label className={labelCls} htmlFor="password">New password (at least 8 characters)</label><input id="password" type="password" className={inputCls} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" required /></div>
  <div><label className={labelCls} htmlFor="confirm">Confirm new password</label><input id="confirm" type="password" className={inputCls} value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="new-password" required /></div>
  <button className={submitCls} disabled={busy}>{busy ? "Updating…" : "Update Password"}</button>
