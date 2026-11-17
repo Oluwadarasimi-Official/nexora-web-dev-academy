@@ -1,4 +1,5 @@
 import { PageHero, Card, SectionTitle } from "@/components/ui";
+import { VerifiedName } from "@/components/VerifiedName";
 import { AUTHORITIES } from "@/lib/data";
 export default function About() {
  return (<div>
@@ -6,7 +7,7 @@ export default function About() {
  <section className="mx-auto max-w-6xl px-4 py-7">
  <div className="max-w-3xl">
  <SectionTitle>Who we are</SectionTitle>
- <p className="mt-3 text-slate-600">The academy is led by {AUTHORITIES.join(" and ")}. The programme is organised in three levels — Beginner, Intermediate and Advanced — with 73 topics in total. Every topic has a full lesson and a 10-question quiz; every level ends in a final examination; every level earns its own certificate when the work is genuinely complete.</p>
+ <p className="mt-3 text-slate-600">The academy is led by <VerifiedName name={AUTHORITIES[0]} /> and <VerifiedName name={AUTHORITIES[1]} />. The programme is organised in three levels — Beginner, Intermediate and Advanced — with 73 topics in total. Every topic has a full lesson and a 10-question quiz; every level ends in a final examination; every level earns its own certificate when the work is genuinely complete.</p>
  <p className="mt-3 text-slate-600">We teach by building. Lessons explain ideas in plain language, show correct code, warn about common mistakes, and end in a practical activity. Progress is measured by completed work, not by time spent on a page.</p>
  </div>
  <div className="mt-8 grid gap-4 md:grid-cols-3">

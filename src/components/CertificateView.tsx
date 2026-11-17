@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { ACADEMY_NAME, AUTHORITIES } from "@/lib/data";
+import { VerifiedName } from "@/components/VerifiedName";
 
 export type CertData = { certificateId: string; studentName: string; title: string; level: number; levelName: string; issuedAt: string; status?: string };
 
@@ -16,8 +17,8 @@ export default function CertificateView({ cert }: { cert: CertData }) {
  <div className="mx-auto mt-8 grid max-w-xl gap-4 border-t border-[#e8dfc8] pt-6 text-left sm:grid-cols-2">
  <div><p className="text-xs uppercase tracking-widest text-slate-500">Certificate ID</p><p className="font-mono font-bold text-navy">{cert.certificateId}</p></div>
  <div><p className="text-xs uppercase tracking-widest text-slate-500">Date of Issue</p><p className="font-bold text-navy">{new Date(cert.issuedAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</p></div>
- <div><p className="text-xs uppercase tracking-widest text-slate-500">Academy Authority</p><p className="font-bold text-navy">{AUTHORITIES[0]}</p></div>
- <div><p className="text-xs uppercase tracking-widest text-slate-500">Academy Authority</p><p className="font-bold text-navy">{AUTHORITIES[1]}</p></div>
+ <div><p className="text-xs uppercase tracking-widest text-slate-500">Academy Authority</p><p className="font-bold text-navy"><VerifiedName name={AUTHORITIES[0]} /></p></div>
+ <div><p className="text-xs uppercase tracking-widest text-slate-500">Academy Authority</p><p className="font-bold text-navy"><VerifiedName name={AUTHORITIES[1]} /></p></div>
  </div>
  {cert.status === "revoked" && <p className="mt-6 font-bold text-red-700">This certificate has been REVOKED.</p>}
  <p className="mt-6 text-xs text-slate-500">Verify this certificate at nexorawebdevacademy.vercel.app/verify-certificate using the certificate ID above.</p>

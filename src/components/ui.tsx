@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ACADEMY_NAME, AUTHORITIES, WHATSAPP_LINK, WHATSAPP_NUMBER } from "@/lib/data";
 import { SidebarMenu } from "@/components/Sidebar";
+import { VerifiedName } from "@/components/VerifiedName";
 
 /* Official logo — the true circular-cropped image (public/logo-circle.png,
  made from public/logo.png, which is untouched). The image itself is the
@@ -62,7 +63,7 @@ export function Header() {
  <p className="font-semibold text-navy">Payment &amp; enrolment — WhatsApp</p>
  <p className="text-slate-600">{WHATSAPP_NUMBER}</p>
  <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" className="btn-gold inline-block px-4 py-2 text-sm">Chat on WhatsApp</a>
- <p className="pt-1 text-xs text-slate-500">Academy authorities: {AUTHORITIES.join(" & ")}.</p>
+ <p className="pt-1 text-xs text-slate-500">Academy authorities: <VerifiedName name={AUTHORITIES[0]} /> &amp; <VerifiedName name={AUTHORITIES[1]} />.</p>
  </div>
  }
  />
@@ -81,11 +82,11 @@ export function Footer() {
  <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
  <div>
  <p className="font-display text-base font-bold tracking-tight">NEXORA <span className="font-semibold text-champagne">Web Dev. Academy</span></p>
- <p className="mt-0.5 max-w-md text-sm text-[#f2e7bd]">Learn. Build. Innovate. — {AUTHORITIES.join(" & ")}.</p>
+ <p className="mt-0.5 max-w-md text-sm text-[#f2e7bd]">Learn. Build. Innovate. — <VerifiedName name={AUTHORITIES[0]} /> &amp; <VerifiedName name={AUTHORITIES[1]} />.</p>
  </div>
  <p className="max-w-md text-xs text-[#f2e7bd]">{ACADEMY_NAME} does not claim government accreditation, university affiliation or external endorsement.</p>
  </div>
- <div className="border-t border-white/15 py-1.5 text-center text-xs text-[#f2e7bd]">© {new Date().getFullYear()} {ACADEMY_NAME} — Official Darax &amp; Official Obafemix.</div>
+ <div className="border-t border-white/15 py-1.5 text-center text-xs text-[#f2e7bd]">© {new Date().getFullYear()} {ACADEMY_NAME} — <VerifiedName name={AUTHORITIES[0]} /> &amp; <VerifiedName name={AUTHORITIES[1]} />.</div>
  </footer>
  );
 }

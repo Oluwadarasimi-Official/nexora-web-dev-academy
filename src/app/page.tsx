@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { DiamondRule, SectionTitle, GoldButton } from "@/components/ui";
+import { VerifiedName } from "@/components/VerifiedName";
 import { LEVELS, TOPICS } from "@/lib/curriculum";
 import { WHATSAPP_LINK, WHATSAPP_NUMBER, AUTHORITIES } from "@/lib/data";
 
@@ -58,7 +59,7 @@ export default function Home() {
  <GoldButton href="/register" className="w-full max-w-xs text-center sm:w-auto">Register as a Student</GoldButton>
  <Link href="/curriculum" className="btn-outline w-full max-w-xs px-5 py-2.5 text-center sm:w-auto">See the Curriculum</Link>
  </div>
- <p className="mx-auto mt-5 max-w-xl text-sm text-slate-500">Run by {AUTHORITIES.join(" & ")}. Payment is made outside this platform on WhatsApp: {WHATSAPP_NUMBER}.</p>
+ <p className="mx-auto mt-5 max-w-xl text-sm text-slate-500">Run by <VerifiedName name={AUTHORITIES[0]} /> &amp; <VerifiedName name={AUTHORITIES[1]} />. Payment is made outside this platform on WhatsApp: {WHATSAPP_NUMBER}.</p>
  </div>
  </section>
 
