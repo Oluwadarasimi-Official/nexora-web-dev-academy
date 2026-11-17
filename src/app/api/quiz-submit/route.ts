@@ -22,6 +22,10 @@ import { readAcademySettings } from "@/lib/settings";
 // In the local demo flow (Supabase not configured) there is no database
 // to check suspension or progress against, so the attempt is marked and
 // returned honestly with persisted:false, as before.
+// On a CONFIGURED deployment an unauthenticated caller gets 401 with no
+// review — the review carries correctAnswer, i.e. the answer key, and it
+// must never go to someone who is not signed in (flagged 17 Nov night:
+// the route previously returned 200 + the full review with no token).
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -109,6 +113,10 @@ export async function POST(req: Request) {
             const { data: attempt, error } = await client.from("quiz_attempts").insert({ student_id: user.id, quiz_id: quizId, topic_slug: slug, score, passed }).select("id").single();
             if (!error && attempt) persisted = true;
           }
+        } else {
+          // Configured deployment, no valid session: never hand the answer
+          // key (review.correctAnswer) to an unauthenticated caller.
+          return NextResponse.json({ error: "Log in first." }, { status: 401 });
         }
       }
     }
