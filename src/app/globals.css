@@ -2,17 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Nexora Web Dev. Academy — UI v7: simple, classic, gold only.
-   The v6 glass is GONE by the owner's call: no frosted cards, no backdrop
-   blur, no translucency, no gradient washes, no radial blobs. The palette
-   is ivory/white backgrounds + dark navy/near-black text + champagne gold
-   (#c9a227) as the single accent. No blue anywhere — the old "sky" scale
-   in tailwind.config is a gold alias now, so legacy classes render gold.
-   The look is calm and classic with generous curves and a wink of warmth:
-   big soft radii, a warm serif display face (Fraunces) for headings, a
-   hand-drawn gold squiggle under one word in the hero, and friendly copy.
-   Depth comes only from minimal soft shadows. If a decoration does not
-   earn its place, it was cut. */
+/* Nexora Web Dev. Academy — UI v8: the academy title page.
+   v7 was clean but still read as a template (hero + stat card + card
+   grid + timeline). v8 keeps everything the owner settled — simple
+   classic, champagne gold (#c9a227) the ONLY accent, no glass, no
+   backdrop blur, no translucency, no gradient washes, no radial blobs,
+   no blue anywhere (the "sky" scale in tailwind.config is a gold alias)
+   — and gives the site one strong, ownable idea instead: the site is a
+   beautifully printed academy prospectus. The hero is a centred title
+   page framed by a gold rule with a diamond; the three levels are
+   chapters on a gold spine, not a grid; the curriculum is a book index
+   with dotted leaders and serif index numbers; the numbers are a ledger
+   strip with hairline dividers, not a widget card; section heads are
+   chapter heads with a kicker and a diamond rule. Depth comes only from
+   minimal soft shadows. If a decoration does not earn its place, it was
+   cut. Distinctive must never mean busy. */
 :root { color-scheme: light; }
 html { scroll-behavior: smooth; overflow-x: clip; }
 section, h1, h2, h3 { scroll-margin-top: 76px; }
@@ -170,35 +174,69 @@ select.input-std option { background: #ffffff; color: #0a2a5e; }
 .faq-item summary .faq-chevron, .glass-faq summary .faq-chevron { transition: transform 0.2s ease; }
 .faq-item[open] summary .faq-chevron, .glass-faq[open] summary .faq-chevron { transform: rotate(180deg); }
 
-/* ---- v7 signature details: short gold rule, big serif numerals,
-   enrolment timeline, and the hand-drawn squiggle under one hero word. ---- */
+/* ---- v8 signature system: diamond rules, the ledger strip, the
+   chapter journey on its gold spine, handbook numerals, and the
+   curriculum index with dotted leaders. ---- */
 .rule-gold {
   display: block; width: 3rem; height: 4px; border-radius: 9999px;
   background: #c9a227;
-}
-.level-num {
-  font-family: var(--font-display), Georgia, serif;
-  font-weight: 600; font-size: 3.25rem; line-height: 1; color: #c9a227;
 }
 .stat-num {
   font-family: var(--font-display), Georgia, serif;
   font-weight: 700; font-size: 1.9rem; line-height: 1.1; color: #0a2a5e;
 }
-.step-dot {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 2.75rem; height: 2.75rem; flex-shrink: 0;
-  border-radius: 9999px; background: #c9a227; color: #fffdf5;
-  font-family: var(--font-display), Georgia, serif;
-  font-weight: 700; font-size: 1.15rem;
-  box-shadow: 0 6px 16px rgba(201, 162, 39, 0.35);
+/* A gold hairline with a small diamond at its centre — the ornament
+   that frames the title page and marks every chapter head. */
+.rule-diamond { display: flex; align-items: center; gap: 0.75rem; }
+.rule-diamond::before, .rule-diamond::after {
+  content: ""; height: 1px; flex: 1; background: #e7cd7a;
 }
-.step-rail { position: relative; }
+.rule-diamond .diamond {
+  width: 8px; height: 8px; flex-shrink: 0;
+  background: #c9a227; transform: rotate(45deg); border-radius: 1px;
+}
+/* The numbers as a ledger strip, not a widget card: serif numerals in
+   a row, separated by gold hairlines, on the bare ivory page. */
+.ledger { display: grid; grid-template-columns: repeat(2, 1fr); }
+.ledger-cell { padding: 1.1rem 0.5rem; text-align: center; }
+@media (max-width: 767px) {
+  .ledger-cell:nth-child(n+3) { border-top: 1px solid #efe6c8; }
+  .ledger-cell:nth-child(even) { border-left: 1px solid #efe6c8; }
+}
 @media (min-width: 768px) {
-  .step-rail::before {
-    content: ""; position: absolute; top: 1.375rem; left: 12%; right: 12%;
-    height: 2px; background: #e7cd7a; border-radius: 9999px; z-index: 0;
-  }
-  .step-rail > * { position: relative; z-index: 1; }
+  .ledger { grid-template-columns: repeat(4, 1fr); }
+  .ledger-cell + .ledger-cell { border-left: 1px solid #e7cd7a; }
+}
+/* The levels as chapters on a gold spine: a vertical hairline runs
+   behind the big serif numerals, so the three levels read as one
+   journey, not three cards. The numerals carry an ivory backing so
+   they cut the line cleanly. */
+.journey { position: relative; }
+.journey::before {
+  content: ""; position: absolute; top: 2rem; bottom: 2rem;
+  left: 2rem; width: 2px; background: #e7cd7a; border-radius: 9999px;
+}
+@media (min-width: 640px) { .journey::before { left: 3rem; } }
+.journey-num {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600; font-size: 2.5rem; line-height: 1; color: #c9a227;
+  background: #fffdf5; display: inline-block; padding: 0.25rem 0.35rem;
+  position: relative; z-index: 1;
+}
+@media (min-width: 640px) { .journey-num { font-size: 4rem; } }
+/* Handbook numerals for the enrolment steps and the house rules —
+   large serif figures in gold, each step/rule opened by a gold top
+   rule instead of a dot on a rail. */
+.step-num {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600; font-size: 2rem; line-height: 1; color: #c9a227;
+}
+/* The curriculum index: a dotted gold leader joins each topic title
+   to its "10 questions" note, the way a printed contents page does. */
+.index-leader {
+  flex: 1 1 auto; min-width: 1.25rem;
+  border-bottom: 2px dotted rgba(201, 162, 39, 0.45);
+  transform: translateY(-4px);
 }
 .squiggle { display: inline-block; position: relative; white-space: nowrap; }
 .squiggle svg { position: absolute; left: 0; right: 0; bottom: -0.35em; width: 100%; height: 0.45em; overflow: visible; }

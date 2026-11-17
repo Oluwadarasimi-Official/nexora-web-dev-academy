@@ -59,7 +59,8 @@ export default function DashboardShell({ children, title }: { children: React.Re
  {/* Page header — title + identity block ONLY. The logo lives once in
      the top bar above; it is never repeated here. */}
  <div className="min-w-0">
- <h1 className="font-display text-3xl font-semibold text-navy">{title}</h1>
+ <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-dark">Student Portal</p>
+ <h1 className="mt-0.5 font-display text-3xl font-semibold text-navy">{title}</h1>
  <p className="mt-1 text-base font-bold leading-snug text-navy">Welcome, {session.name}</p>
  <div className="mt-2 flex flex-wrap items-center gap-1.5">
  <span className="chip rounded-full px-2.5 py-1 text-xs font-medium">{session.email}</span>

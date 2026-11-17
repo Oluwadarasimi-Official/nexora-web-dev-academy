@@ -90,13 +90,24 @@ export function Footer() {
  );
 }
 
+/* A gold hairline with a small diamond at its centre — the ornament
+   that frames the title page and marks every chapter head. */
+export function DiamondRule({ className = "" }: { className?: string }) {
+ return (
+ <span aria-hidden="true" className={`rule-diamond ${className}`}>
+ <i className="diamond" />
+ </span>
+ );
+}
+
 export function PageHero({ title, intro }: { title: string; intro: string }) {
  return (
  <section className="hero-band">
  <div className="mx-auto max-w-6xl px-4 py-8">
  <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-dark">Nexora Web Dev. Academy</p>
  <h1 className="mt-2 font-display text-3xl font-semibold leading-tight text-navy sm:text-4xl">{title}</h1>
- <p className="mt-3 max-w-3xl text-slate-600">{intro}</p>
+ <DiamondRule className="mt-4 max-w-40" />
+ <p className="mt-4 max-w-3xl text-slate-600">{intro}</p>
  </div>
  </section>
  );
@@ -105,16 +116,17 @@ export function PageHero({ title, intro }: { title: string; intro: string }) {
 export function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
  return <div className={`card card-hover rounded-[1.75rem] p-5 ${className}`}>{children}</div>;
 }
-export function SectionTitle({ children }: { children: React.ReactNode }) {
+export function SectionTitle({ children, kicker }: { children: React.ReactNode; kicker?: string }) {
  return (
  <div>
- <span className="rule-gold" aria-hidden="true" />
- <h2 className="mt-3 font-display text-3xl font-semibold leading-tight text-navy">{children}</h2>
+ {kicker && <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-dark">{kicker}</p>}
+ <h2 className="mt-2 font-display text-3xl font-semibold leading-tight text-navy">{children}</h2>
+ <DiamondRule className="mt-4 max-w-40" />
  </div>
  );
 }
-export function GoldButton({ children, href }: { children: React.ReactNode; href: string }) {
- return <Link href={href} className="btn-gold px-5 py-2.5">{children}</Link>;
+export function GoldButton({ children, href, className = "" }: { children: React.ReactNode; href: string; className?: string }) {
+ return <Link href={href} className={`btn-gold px-5 py-2.5 ${className}`}>{children}</Link>;
 }
 export function Alert({ kind, children }: { kind: "error" | "success" | "info"; children: React.ReactNode }) {
  const cls = kind === "error" ? "border-red-200 bg-red-50 text-red-700" : kind === "success" ? "border-gold/50 bg-gold/10 text-gold-dark" : "border-gold/40 bg-[#fdf8ec] text-navy";
