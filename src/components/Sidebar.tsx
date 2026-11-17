@@ -17,7 +17,7 @@ import { FAQS } from "@/lib/data";
  * lives here until the user opens it with the sidebar trigger.
  *
  * Behaviour (same everywhere): a realistic panel icon at the far right of
- * the top bar, real frosted-glass drawer slides in from the right, dimmed
+ * the top bar, a solid white drawer slides in from the right, dimmed
  * backdrop, close button, closes on backdrop click, on link click, and on
  * Escape. The FAQ lives ONLY here — tap a question to expand its answer.
  */
@@ -79,7 +79,7 @@ export function SidebarMenu({
         aria-label={title}
         className={`drawer-panel fixed right-0 top-0 z-50 flex h-full w-[86vw] max-w-sm flex-col ${open ? "translate-x-0" : "translate-x-full drawer-closed"}`}
       >
-        <div className="flex items-center justify-between gap-3 border-b border-white/60 px-5 py-4">
+        <div className="flex items-center justify-between gap-3 border-b border-[#ece2bd] px-5 py-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-dark">{title}</p>
             {intro && <p className="mt-0.5 text-xs text-slate-500">{intro}</p>}
@@ -88,7 +88,7 @@ export function SidebarMenu({
             type="button"
             onClick={() => setOpen(false)}
             aria-label="Close menu"
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/70 bg-white/70 text-navy backdrop-blur transition hover:border-gold"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#ece2bd] bg-white text-navy transition hover:border-gold"
           >
             <X className="h-5 w-5" />
           </button>
@@ -98,7 +98,7 @@ export function SidebarMenu({
             const Icon = LINK_ICONS[label] ?? ChevronRight;
             return (
               <Link key={href + label} href={href} onClick={() => setOpen(false)} className={`drawer-link ${activeHref === href ? "active" : ""}`}>
-                <Icon className="h-[18px] w-[18px] text-sky-700" aria-hidden="true" />
+                <Icon className="h-[18px] w-[18px] text-gold-dark" aria-hidden="true" />
                 <span>{label}</span>
               </Link>
             );
@@ -108,10 +108,10 @@ export function SidebarMenu({
               <p className="px-2 text-xs font-bold uppercase tracking-[0.2em] text-gold-dark">Frequently asked questions</p>
               <div className="mt-2 space-y-2">
                 {FAQS.map((f) => (
-                  <details key={f.q} className="glass-faq card rounded-xl p-3">
+                  <details key={f.q} className="faq-item card rounded-[1.25rem] p-3">
                     <summary className="flex items-center justify-between gap-2 text-sm font-semibold text-navy">
                       <span>{f.q}</span>
-                      <ChevronDown className="faq-chevron h-4 w-4 shrink-0 text-sky-700" aria-hidden="true" />
+                      <ChevronDown className="faq-chevron h-4 w-4 shrink-0 text-gold-dark" aria-hidden="true" />
                     </summary>
                     <p className="mt-2 text-sm text-slate-600">{f.a}</p>
                   </details>
@@ -120,7 +120,7 @@ export function SidebarMenu({
             </div>
           )}
         </nav>
-        {extra && <div className="border-t border-white/60 px-5 py-4">{extra}</div>}
+        {extra && <div className="border-t border-[#ece2bd] px-5 py-4">{extra}</div>}
       </aside>
     </>
   );
@@ -131,7 +131,7 @@ export function SidebarMenu({
         onClick={() => setOpen(true)}
         aria-label={`Open ${title} menu`}
         aria-expanded={open}
-        className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/70 bg-white/70 text-navy shadow-sm backdrop-blur transition hover:border-gold hover:text-sky-700"
+        className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#ece2bd] bg-white text-navy shadow-sm transition hover:border-gold hover:text-gold-dark"
       >
         <PanelRight className="h-5 w-5" aria-hidden="true" />
       </button>

@@ -21,7 +21,7 @@ export function AuthShell({ title, intro, children }: { title: string; intro: st
  <div className="auth-ornament" aria-hidden="true">
  <span className="dot" style={{ background: "#c9a227" }} />
  <span>Learn. Build. Innovate.</span>
- <span className="dot" style={{ background: "#1e6fd9" }} />
+ <span className="dot" style={{ background: "#c9a227" }} />
  </div>
  </section>
  );

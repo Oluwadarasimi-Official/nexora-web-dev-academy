@@ -57,11 +57,11 @@ export default function AdminShell({ children, title, intro }: { children: React
      bar above; it is never repeated here. */}
  <div className="min-w-0">
  <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-dark">Administrator Portal — private</p>
- <h1 className="mt-0.5 text-2xl font-bold tracking-tight text-navy">{title}</h1>
+ <h1 className="mt-0.5 font-display text-3xl font-semibold text-navy">{title}</h1>
  {intro && <p className="mt-1 text-sm leading-relaxed text-slate-600">{intro}</p>}
  </div>
  <div className="flex shrink-0 items-center gap-2">
- <button onClick={async () => { await supabaseSignOut(); router.push("/login"); }} className="btn-sky px-4 py-2 text-sm">Secure Logout</button>
+ <button onClick={async () => { await supabaseSignOut(); router.push("/login"); }} className="btn-outline px-4 py-2 text-sm">Secure Logout</button>
  <SidebarMenu
  title="Admin Menu"
  intro="Curriculum, certificates, support & settings"
@@ -76,7 +76,7 @@ export default function AdminShell({ children, title, intro }: { children: React
  {/* Primary tabs — one clean horizontal scroll row, never wrapping. */}
  <nav className="no-scrollbar -mx-4 mt-4 flex flex-nowrap gap-2 overflow-x-auto px-4 pb-1" aria-label="Admin navigation">
  {PRIMARY.map(([label, href]) => (
- <Link key={href} href={href} className={`shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium transition ${pathname === href ? "border-gold bg-gold text-ink" : "chip text-navy hover:border-gold hover:text-sky"}`}>{label}</Link>
+ <Link key={href} href={href} className={`shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium transition ${pathname === href ? "border-gold bg-gold text-ink" : "chip text-navy hover:border-gold hover:text-gold-dark"}`}>{label}</Link>
  ))}
  </nav>
  <div className="mt-4">{children}</div>

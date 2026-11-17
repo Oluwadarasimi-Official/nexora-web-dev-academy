@@ -6,10 +6,9 @@ import { SidebarMenu } from "@/components/Sidebar";
 /* Official logo — the true circular-cropped image (public/logo-circle.png,
  made from public/logo.png, which is untouched). The image itself is the
  circle, and it is rendered on a solid white disc with a gold hairline and
- a soft shadow so the circular edge is unmistakable on any background —
- on a phone the bare emblem used to read as a rounded square. It appears
- ONLY as this small circle in the top-left of the header, aligned with
- the brand text. */
+ a soft shadow so the circular edge is unmistakable on any background.
+ It appears ONLY as this small circle in the top-left of the header,
+ aligned with the brand text. */
 export function Logo({ size = 40 }: { size?: number }) {
  return (
  <span className="inline-flex shrink-0 items-center gap-2.5">
@@ -23,17 +22,17 @@ export function Logo({ size = 40 }: { size?: number }) {
  priority
  />
  <span className="leading-tight">
- <span className="block whitespace-nowrap text-lg font-extrabold tracking-tight text-navy">NEXORA</span>
+ <span className="block whitespace-nowrap font-display text-lg font-bold tracking-tight text-navy">NEXORA</span>
  <span className="block whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.18em] text-gold-dark">Web Dev. Academy</span>
  </span>
  </span>
  );
 }
 
-/* Public header — small circular logo top-left, standard nav links,
- actions on the right. Everything secondary (How It Works, Certificates,
- Contact, Verify Certificate, WhatsApp) lives in the sliding sidebar,
- opened from the hamburger at the far right. */
+/* Public header — solid ivory, small circular logo top-left, standard nav
+ links, actions on the right. Everything secondary (How It Works,
+ Certificates, Contact, Verify Certificate, WhatsApp) lives in the
+ sliding sidebar, opened from the hamburger at the far right. */
 export function Header() {
  const primary = [["About", "/about"], ["Programme", "/programme"], ["Curriculum", "/curriculum"]];
  const secondary: [string, string][] = [
@@ -45,13 +44,13 @@ export function Header() {
  ["Register", "/register"],
  ];
  return (
- <header className="glass-header sticky top-0 z-40">
+ <header className="site-header sticky top-0 z-40">
  <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-2">
  <Link href="/" aria-label="Nexora Web Dev. Academy — home"><Logo /></Link>
  <div className="flex flex-wrap items-center gap-2">
  <nav className="hidden items-center gap-x-5 text-sm font-medium text-navy md:flex" aria-label="Main navigation">
- {primary.map(([label, href]) => (<Link key={href} className="transition hover:text-sky" href={href}>{label}</Link>))}
- <Link href="/login" className="transition hover:text-sky">Student Login</Link>
+ {primary.map(([label, href]) => (<Link key={href} className="transition hover:text-gold-dark" href={href}>{label}</Link>))}
+ <Link href="/login" className="transition hover:text-gold-dark">Student Login</Link>
  <Link href="/register" className="btn-gold px-4 py-2 text-sm">Register</Link>
  </nav>
  <SidebarMenu
@@ -81,37 +80,43 @@ export function Footer() {
  <footer className="mt-auto bg-navy text-white">
  <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
  <div>
- <p className="text-base font-extrabold tracking-tight">NEXORA <span className="font-semibold text-champagne">Web Dev. Academy</span></p>
- <p className="mt-0.5 max-w-md text-sm text-sky-100">Learn. Build. Innovate. — {AUTHORITIES.join(" & ")}.</p>
+ <p className="font-display text-base font-bold tracking-tight">NEXORA <span className="font-semibold text-champagne">Web Dev. Academy</span></p>
+ <p className="mt-0.5 max-w-md text-sm text-[#f2e7bd]">Learn. Build. Innovate. — {AUTHORITIES.join(" & ")}.</p>
  </div>
- <p className="max-w-md text-xs text-sky-100">{ACADEMY_NAME} does not claim government accreditation, university affiliation or external endorsement.</p>
+ <p className="max-w-md text-xs text-[#f2e7bd]">{ACADEMY_NAME} does not claim government accreditation, university affiliation or external endorsement.</p>
  </div>
- <div className="border-t border-white/15 py-1.5 text-center text-xs text-sky-100">© {new Date().getFullYear()} {ACADEMY_NAME} — Official Darax &amp; Official Obafemix.</div>
+ <div className="border-t border-white/15 py-1.5 text-center text-xs text-[#f2e7bd]">© {new Date().getFullYear()} {ACADEMY_NAME} — Official Darax &amp; Official Obafemix.</div>
  </footer>
  );
 }
 
 export function PageHero({ title, intro }: { title: string; intro: string }) {
  return (
- <section className="glass-hero">
- <div className="mx-auto max-w-6xl px-4 py-7">
- <h1 className="text-3xl font-extrabold tracking-tight text-navy sm:text-4xl">{title}</h1>
- <p className="mt-2 max-w-3xl text-slate-600">{intro}</p>
+ <section className="hero-band">
+ <div className="mx-auto max-w-6xl px-4 py-8">
+ <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-dark">Nexora Web Dev. Academy</p>
+ <h1 className="mt-2 font-display text-3xl font-semibold leading-tight text-navy sm:text-4xl">{title}</h1>
+ <p className="mt-3 max-w-3xl text-slate-600">{intro}</p>
  </div>
  </section>
  );
 }
 
 export function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
- return <div className={`card card-hover rounded-2xl p-5 ${className}`}>{children}</div>;
+ return <div className={`card card-hover rounded-[1.75rem] p-5 ${className}`}>{children}</div>;
 }
 export function SectionTitle({ children }: { children: React.ReactNode }) {
- return <h2 className="text-2xl font-bold tracking-tight text-navy">{children}</h2>;
+ return (
+ <div>
+ <span className="rule-gold" aria-hidden="true" />
+ <h2 className="mt-3 font-display text-3xl font-semibold leading-tight text-navy">{children}</h2>
+ </div>
+ );
 }
 export function GoldButton({ children, href }: { children: React.ReactNode; href: string }) {
  return <Link href={href} className="btn-gold px-5 py-2.5">{children}</Link>;
 }
 export function Alert({ kind, children }: { kind: "error" | "success" | "info"; children: React.ReactNode }) {
- const cls = kind === "error" ? "border-red-200 bg-red-50 text-red-700" : kind === "success" ? "border-sky-200 bg-sky-50 text-sky-800" : "border-sky-200 bg-sky-50 text-sky-800";
- return <div role="status" className={`rounded-xl border px-4 py-3 text-sm ${cls}`}>{children}</div>;
+ const cls = kind === "error" ? "border-red-200 bg-red-50 text-red-700" : kind === "success" ? "border-gold/50 bg-gold/10 text-gold-dark" : "border-gold/40 bg-[#fdf8ec] text-navy";
+ return <div role="status" className={`rounded-2xl border px-4 py-3 text-sm ${cls}`}>{children}</div>;
 }

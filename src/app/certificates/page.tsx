@@ -16,7 +16,7 @@ export default function CertificatesPage() {
  </div>
  <div className="mt-8">
  <SectionTitle>What appears on a certificate</SectionTitle>
- <p className="mt-2 text-slate-600">Academy name and logo, your full name, the exact certificate title, the completed level, a concise achievement statement, the issue date, a unique certificate ID, and the academy authorities — Official Darax and Official Obafemix. Certificates use an elegant white/ivory layout with restrained gold and sky-blue accents. No signatures are fabricated: authority name spaces are used unless approved signature artwork is supplied.</p>
+ <p className="mt-2 text-slate-600">Academy name and logo, your full name, the exact certificate title, the completed level, a concise achievement statement, the issue date, a unique certificate ID, and the academy authorities — Official Darax and Official Obafemix. Certificates use an elegant white/ivory layout with restrained gold accents. No signatures are fabricated: authority name spaces are used unless approved signature artwork is supplied.</p>
  <p className="mt-3 text-slate-600">Certificates can be downloaded and printed from your student dashboard. A certificate that is revoked by an administrator (for example, after a correction) shows as revoked on the verification page.</p>
  </div>
  <div className="mt-8 flex flex-wrap gap-3">
