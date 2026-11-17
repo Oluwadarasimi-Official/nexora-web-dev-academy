@@ -23,6 +23,7 @@ const PRIMARY = [
 const SECONDARY: [string, string][] = [
  ["Curriculum & Quizzes", "/admin/curriculum"],
  ["Certificates", "/admin/certificates"],
+ ["Examination Grading", "/admin/exams"],
  ["Announcements", "/admin/announcements"],
  ["Support Requests", "/admin/support"],
  ["Activity Logs", "/admin/logs"],

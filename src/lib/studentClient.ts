@@ -41,6 +41,24 @@ export async function studentFetch(
   return fetch(path, { ...init, headers });
 }
 
+/* GET helper with the same session handling as studentPost: connected
+ * deployment with no session throws the plain "sign in again" message;
+ * local demo flow proceeds without a token. */
+export async function studentGet<T>(path: string): Promise<T> {
+  if (isSupabaseConfigured()) {
+    const token = await getStudentToken();
+    if (!token) throw new StudentApiError(401, SESSION_EXPIRED_MESSAGE);
+  }
+  const res = await studentFetch(path, { method: "GET" });
+  const data = (await res.json().catch(() => ({}))) as { error?: string };
+  if (!res.ok) {
+    const message =
+      res.status === 401 ? SESSION_EXPIRED_MESSAGE : data.error || "Request failed.";
+    throw new StudentApiError(res.status, message);
+  }
+  return data as T;
+}
+
 /* POST helper used by all student pages. Throws StudentApiError on failure
  so call sites can show the message directly.
  - Connected deployment with no session: the server would answer 401
