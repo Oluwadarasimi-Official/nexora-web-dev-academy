@@ -1,9 +1,17 @@
 "use client";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { supabaseSignOut } from "@/components/AuthForm";
 import { Logo } from "@/components/ui";
 import { SidebarMenu } from "@/components/Sidebar";
+import { adminFetch } from "@/lib/adminClient";
+
+/* Admin gate: every /admin page renders inside this shell, so the check
+ lives here once. On mount it asks the server (with the signed-in admin's
+ session token) whether the caller is an administrator; anyone else is
+ sent to /login. Until the check answers, only a loading card is shown —
+ no admin content leaks to a signed-out or non-admin visitor. */
 
 /* Primary admin navigation only. Everything secondary — curriculum,
  certificates, announcements, support, logs, settings — lives in the
@@ -23,6 +31,26 @@ const SECONDARY: [string, string][] = [
 ];
 export default function AdminShell({ children, title, intro }: { children: React.ReactNode; title: string; intro?: string }) {
  const pathname = usePathname(); const router = useRouter();
+ const [allowed, setAllowed] = useState(false);
+ useEffect(() => {
+  let alive = true;
+  (async () => {
+   try {
+    const res = await adminFetch("/api/admin/overview");
+    if (!alive) return;
+    if (!res.ok) { router.replace("/login"); return; }
+    setAllowed(true);
+   } catch { router.replace("/login"); }
+  })();
+  return () => { alive = false; };
+ }, [router]);
+ if (!allowed) {
+  return (
+   <div className="mx-auto max-w-6xl px-4 py-6">
+    <div className="card rounded-2xl p-5 text-sm text-slate-600">Checking administrator access…</div>
+   </div>
+  );
+ }
  return (
  <div className="mx-auto max-w-6xl px-4 py-6">
  <div className="flex flex-wrap items-center justify-between gap-3">

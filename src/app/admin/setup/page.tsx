@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Card, Alert } from "@/components/ui";
+import { adminFetch } from "@/lib/adminClient";
 export default function AdminSetup() {
  const [email, setEmail] = useState(""); const [token, setToken] = useState("");
  const [msg, setMsg] = useState(""); const [err, setErr] = useState(""); const [busy, setBusy] = useState(false);
@@ -8,7 +9,10 @@ export default function AdminSetup() {
  e.preventDefault(); setErr(""); setMsg("");
  setBusy(true);
  try {
- const res = await fetch("/api/admin/setup", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: email.trim().toLowerCase(), setupToken: token }) });
+ /* The caller's session token goes with the request: the server must see
+    a signed-in administrator (anon-key calls can never read rows under
+    RLS, so a token-less call always fails with "no registered account"). */
+ const res = await adminFetch("/api/admin/setup", { method: "POST", body: JSON.stringify({ email: email.trim().toLowerCase(), setupToken: token }) });
  const data = await res.json();
  if (!res.ok) { setErr(data.error || "Bootstrap failed."); return; }
  setMsg(data.message || "Admin role granted.");
@@ -19,13 +23,13 @@ export default function AdminSetup() {
  <Card>
  <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-dark">One-time Admin Bootstrap</p>
  <h1 className="mt-1 text-2xl font-bold text-navy">Set Up the First Administrator</h1>
- <p className="mt-2 text-sm text-slate-600">This page promotes an <strong>already registered</strong> student account to administrator. It requires the <code>ADMIN_SETUP_TOKEN</code> environment variable, which only the owner sets in Vercel (Production, server-only). No admin password is invented or hardcoded anywhere.</p>
+ <p className="mt-2 text-sm text-slate-600">This page promotes an <strong>already registered</strong> student account to administrator. You must be <strong>signed in as an administrator</strong> first, and it requires the <code>ADMIN_SETUP_TOKEN</code> environment variable, which only the owner sets in Vercel (Production, server-only). No admin password is invented or hardcoded anywhere.</p>
  <div className="mt-4 card-soft rounded-2xl border border-slate-200 p-4 text-sm text-slate-700">
  <strong>Steps:</strong>
  <ol className="mt-1 list-decimal space-y-1 pl-5">
  <li>Register the future admin as an ordinary student at /register.</li>
  <li>Set <code>ADMIN_SETUP_TOKEN</code> to a long random value in Vercel → Settings → Environment Variables (Production only).</li>
- <li>Enter that email and token below, once. After the first admin exists, further admins are added by the owner directly in the database — this page then refuses new promotions unless the token still matches.</li>
+ <li>Sign in as an administrator, then enter that email and token below. Only a signed-in administrator with the token can promote an account.</li>
  </ol>
  </div>
  {msg && <div className="mt-4"><Alert kind="success">{msg}</Alert></div>}
