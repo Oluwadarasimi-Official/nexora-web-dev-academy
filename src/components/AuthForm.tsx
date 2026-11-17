@@ -16,6 +16,13 @@ export function AuthShell({ title, intro, children }: { title: string; intro: st
  <p className="mt-1 text-center text-sm leading-relaxed text-slate-600">{intro}</p>
  <div className="mt-4">{children}</div>
  </div>
+ {/* Tall-viewport ornament only (hidden below 900px height, so the exact
+     844px phone fit is untouched): fills the dead space under the card. */}
+ <div className="auth-ornament" aria-hidden="true">
+ <span className="dot" style={{ background: "#c9a227" }} />
+ <span>Learn. Build. Innovate.</span>
+ <span className="dot" style={{ background: "#1e6fd9" }} />
+ </div>
  </section>
  );
 }
