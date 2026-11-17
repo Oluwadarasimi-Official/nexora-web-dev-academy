@@ -39,7 +39,7 @@ const routes = [
   "src/app/admin/support/page.tsx","src/app/admin/logs/page.tsx",
   "src/app/admin/settings/page.tsx",
   "src/app/api/redeem-code/route.ts",
-  "src/app/api/progress/route.ts",
+  "src/app/api/progress/route.ts","src/app/api/lesson-view/route.ts",
   "src/app/api/complete-topic/route.ts","src/app/api/quiz-submit/route.ts",
   "src/app/api/exam-start/route.ts","src/app/api/exam-submit/route.ts",
   "src/app/api/exam-status/route.ts",
@@ -57,6 +57,7 @@ const routes = [
   "supabase/migrations/006_student_read_quizzes.sql",
   "supabase/migrations/007_exam_persistence.sql",
   "supabase/migrations/008_student_read_settings.sql",
+  "supabase/migrations/009_lesson_views.sql",
 ];
 let missing = routes.filter((r) => !fs.existsSync(path.join(root, r)));
 console.log(`routes/files checked: ${routes.length}, missing: ${missing.length}`);

@@ -28,6 +28,10 @@ export default function Quizzes() {
  const done = p.completedTopics.includes(t.slug);
  const q = p.quizAttempts[t.slug];
  const locked = !p.activated || !levelOpen;
+ // Lesson-view gate (owner rule): the quiz link stays shut until the
+ // course (lesson) for this topic has been opened. A completed topic
+ // counts as opened (legacy: completed before lesson_views existed).
+ const opened = done || (p.openedLessons ?? []).includes(t.slug);
  return (
  <li key={t.slug} className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2">
  <span className="text-slate-700">{t.title}</span>
@@ -36,8 +40,9 @@ export default function Quizzes() {
  : q ? (<span>{`Quiz ${q.score}/10 ${q.passed ? "(passed)" : "(not passed)"}`}</span>)
  : locked ? (<span className="font-semibold text-amber-700"><Lock className="inline h-4 w-4" /> Locked</span>)
  : (<span className="text-slate-500">Not taken</span>)}
- {!locked && !done && <Link className="font-semibold text-sky" href={`/dashboard/quiz/${t.slug}`}>Take quiz</Link>}
- {!locked && done && <Link className="font-semibold text-sky" href={`/dashboard/quiz/${t.slug}`}>Retake</Link>}
+ {!locked && opened && !done && <Link className="font-semibold text-sky" href={`/dashboard/quiz/${t.slug}`}>Take quiz</Link>}
+ {!locked && opened && done && <Link className="font-semibold text-sky" href={`/dashboard/quiz/${t.slug}`}>Retake</Link>}
+ {!locked && !opened && <Link className="font-semibold text-sky" href={`/dashboard/topic/${t.slug}`}>Open the course first</Link>}
  </span>
  </li>
  );

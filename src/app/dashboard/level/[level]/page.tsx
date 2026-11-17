@@ -24,6 +24,10 @@ export default function LevelPage({ params }: { params: { level: string } }) {
  {topics.filter((t) => t.module === m).map((t) => {
  const done = p.completedTopics.includes(t.slug);
  const locked = !p.activated || !unlocked;
+ // Lesson-view gate (owner rule): the quiz for a topic must not open
+ // until its course (lesson) has been opened. A completed topic counts
+ // as opened (legacy: completed before lesson_views existed).
+ const opened = done || (p.openedLessons ?? []).includes(t.slug);
  return (
  <Card key={t.slug}>
  <h4 className="font-semibold text-navy">{t.title} {done && <span className="text-sky-600"><Check className="inline h-4 w-4" /> Completed</span>}</h4>
@@ -31,9 +35,13 @@ export default function LevelPage({ params }: { params: { level: string } }) {
  {locked ? (
  <p className="mt-3 text-sm font-semibold text-amber-700"><Lock className="inline h-4 w-4" /> {p.activated ? `Locked — complete Level ${level - 1} first.` : "Locked — redeem your access code to unlock."}</p>
  ) : (
- <div className="mt-3 flex gap-3 text-sm">
- <Link className="font-semibold text-sky" href={`/dashboard/topic/${t.slug}`}>Read lesson <ArrowRight className="inline h-4 w-4" /></Link>
- <Link className="font-semibold text-sky" href={`/dashboard/quiz/${t.slug}`}>Take quiz <ArrowRight className="inline h-4 w-4" /></Link>
+ <div className="mt-3 flex flex-wrap gap-2">
+ <Link className="btn-gold px-4 py-2 text-sm" href={`/dashboard/topic/${t.slug}`}>Open Course <ArrowRight className="inline h-4 w-4" /></Link>
+ {opened ? (
+ <Link className="btn-outline px-4 py-2 text-sm" href={`/dashboard/quiz/${t.slug}`}>Open Quiz <ArrowRight className="inline h-4 w-4" /></Link>
+ ) : (
+ <span className="btn-outline px-4 py-2 text-sm opacity-60"><Lock className="inline h-4 w-4" /> Open the course first</span>
+ )}
  </div>
  )}
  </Card>
