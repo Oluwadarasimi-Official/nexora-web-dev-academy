@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Nexora Web Dev. Academy — light ivory foundation, champagne gold + sky blue.
+   No dark theme, no neon, no glassmorphism, no excessive gradients. */
+:root { color-scheme: light; }
+html { scroll-behavior: smooth; }
+body { background: #fffdf5; color: #1f2937; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+a { overflow-wrap: anywhere; }
+input, select, textarea { font-size: 1rem; }
+input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible {
+  outline: 2px solid #1e6fd9; outline-offset: 2px;
+}
+pre { white-space: pre-wrap; word-break: break-word; }
+@media print {
+  header, footer, .no-print { display: none !important; }
+  body { background: #fff; }
+  .print-area { border: none !important; box-shadow: none !important; }
+}
