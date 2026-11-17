@@ -5,6 +5,7 @@ import { Card, Alert } from "@/components/ui";
 import CertificateView from "@/components/CertificateView";
 import { LEVELS, TOPICS } from "@/lib/curriculum";
 import { loadProgress, saveProgress, pushNotification, loadSession } from "@/lib/store";
+import { studentPost } from "@/lib/studentClient";
 
 export default function MyCertificates() {
  const [p, setP] = useState(loadProgress());
@@ -17,15 +18,13 @@ export default function MyCertificates() {
  if (!levelComplete(level) || !examPassed(level)) return setErr("This certificate requires full level completion and a passed final examination.");
  setBusy(true);
  try {
- const res = await fetch("/api/issue-certificate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ level, studentName: session?.name || "Student" }) });
- const data = await res.json();
- if (!res.ok) { setErr(data.error || "Certificate could not be issued."); return; }
+ const data = await studentPost<{ certificateId: string; title: string; issuedAt: string; persisted?: boolean }>("/api/issue-certificate", { level, studentName: session?.name || "Student" });
  const next = loadProgress();
  if (!next.certificates.some((c) => c.level === level)) next.certificates.push({ level, id: data.certificateId, title: data.title, issuedAt: data.issuedAt });
  pushNotification(next, `Certificate issued: ${data.title} (Level ${level}). Certificate ID ${data.certificateId}.`);
  saveProgress(next); setP(next);
  setMsg(`Certificate issued: ${data.certificateId}. ${data.persisted ? "Recorded in the academy database." : "Recorded on this device."}`);
- } catch { setErr("Network error."); } finally { setBusy(false); }
+ } catch (e) { setErr(e instanceof Error ? e.message : "Network error."); } finally { setBusy(false); }
  }
  return (
  <DashboardShell title="My Certificates">

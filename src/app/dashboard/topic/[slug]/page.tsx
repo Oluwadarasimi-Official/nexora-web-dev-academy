@@ -6,6 +6,7 @@ import DashboardShell from "@/components/DashboardShell";
 import { Card, Alert } from "@/components/ui";
 import { topicBySlug, topicsForLevel } from "@/lib/curriculum";
 import { loadProgress, saveProgress, lagosDate, pushNotification } from "@/lib/store";
+import { studentPost } from "@/lib/studentClient";
 
 export default function TopicPage({ params }: { params: { slug: string } }) {
  const topic = topicBySlug(params.slug);
@@ -30,16 +31,14 @@ export default function TopicPage({ params }: { params: { slug: string } }) {
  if (!quiz?.passed) return setErr("Complete this topic's quiz first and score at least 7/10. A passed quiz is required before a topic can be marked complete.");
  setBusy(true);
  try {
- const res = await fetch("/api/complete-topic", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug: topicSlug, level: topicLevel, isNew, lagosDate: today }) });
- const data = await res.json();
- if (!res.ok) { setErr(data.error || "Could not complete the topic."); return; }
+ const data = await studentPost<{ persisted?: boolean }>("/api/complete-topic", { slug: topicSlug, level: topicLevel, isNew, lagosDate: today });
  const next = loadProgress();
  if (!next.completedTopics.includes(topicSlug)) next.completedTopics.push(topicSlug);
  if (isNew) next.daily[today] = (next.daily[today] || 0) + 1;
  pushNotification(next, `Topic completed: ${topicTitle} (Level ${topicLevel}).`);
  saveProgress(next);
  setMsg(`Topic completed. ${data.persisted ? "Saved to the academy database." : "Saved on this device."} Remaining new topics today: ${isNew ? Math.max(0, remaining - 1) : remaining}.`);
- } catch { setErr("Network error. Try again."); }
+ } catch (e) { setErr(e instanceof Error ? e.message : "Network error. Try again."); }
  finally { setBusy(false); }
  }
 

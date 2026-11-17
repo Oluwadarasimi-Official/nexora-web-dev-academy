@@ -4,6 +4,7 @@ import DashboardShell from "@/components/DashboardShell";
 import { Card, Alert } from "@/components/ui";
 import { EXAMS, LEVELS, TOPICS } from "@/lib/curriculum";
 import { loadProgress, saveProgress, pushNotification } from "@/lib/store";
+import { studentPost } from "@/lib/studentClient";
 
 export default function Exams() {
  const [p, setP] = useState(loadProgress());
@@ -29,27 +30,23 @@ export default function Exams() {
  if (!levelComplete(level)) return setErr("This examination opens only when every topic and quiz in the level is complete.");
  setBusy(true);
  try {
- const res = await fetch("/api/exam-start", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ level }) });
- const data = await res.json();
- if (!res.ok) { setErr(data.error || "Could not start the examination."); return; }
+ const data = await studentPost<{ attemptId: string; durationMinutes: number; startedAt: string; expiresAt: string }>("/api/exam-start", { level });
  setStarted({ level, ...data });
  setSecondsLeft(data.durationMinutes * 60);
- } catch { setErr("Network error."); } finally { setBusy(false); }
+ } catch (e) { setErr(e instanceof Error ? e.message : "Network error."); } finally { setBusy(false); }
  }
  async function submitExam() {
  if (!started) return;
  setBusy(true);
  try {
- const res = await fetch("/api/exam-submit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ level: started.level, attemptId: started.attemptId, answers }) });
- const data = await res.json();
- if (!res.ok) { setErr(data.error || "Submission failed."); return; }
+ const data = await studentPost<{ level: number; objectiveScore: number; objectiveTotal: number; theoryStatus: string; status: string }>("/api/exam-submit", { level: started.level, attemptId: started.attemptId, answers });
  setResult(data);
  const next = loadProgress();
  next.examAttempts[`level-${started.level}`] = { status: data.status, at: new Date().toISOString() };
  pushNotification(next, `Examination submitted: Level ${started.level} — ${data.status}. Objective ${data.objectiveScore}/${data.objectiveTotal}; theory ${data.theoryStatus}.`);
  saveProgress(next);
  setStarted(null);
- } catch { setErr("Network error."); } finally { setBusy(false); }
+ } catch (e) { setErr(e instanceof Error ? e.message : "Network error."); } finally { setBusy(false); }
  }
  const exam = started ? EXAMS.find((e) => e.level === started.level) : null;
  const objectiveQs = exam ? Array.from({ length: exam.objectiveCount }, (_, i) => {

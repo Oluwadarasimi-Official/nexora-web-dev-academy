@@ -5,6 +5,7 @@ import DashboardShell from "@/components/DashboardShell";
 import { Card, Alert } from "@/components/ui";
 import { WHATSAPP_LINK, WHATSAPP_NUMBER } from "@/lib/data";
 import { loadProgress, saveProgress, pushNotification } from "@/lib/store";
+import { studentPost } from "@/lib/studentClient";
 
 export default function Payment() {
  const [p, setP] = useState(loadProgress());
@@ -16,28 +17,24 @@ export default function Payment() {
  if (ref.trim().length < 3) return setErr("Enter your payment confirmation/reference.");
  setBusy(true);
  try {
- const res = await fetch("/api/submit-payment", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reference: ref.trim(), evidenceNote: note.trim() }) });
- const data = await res.json();
- if (!res.ok) { setErr(data.error || "Submission failed."); return; }
+ const data = await studentPost<{ persisted?: boolean }>("/api/submit-payment", { reference: ref.trim(), evidenceNote: note.trim() });
  const next = loadProgress(); next.paymentStatus = "pending"; next.paymentRef = ref.trim();
  pushNotification(next, "Payment confirmation submitted. Status: pending administrator review.");
  saveProgress(next); setP(next);
  setMsg(`Payment confirmation submitted. Status: pending. ${data.persisted ? "Recorded in the academy database." : "Recorded on this device (database sync pending)."} An administrator will verify it independently.`);
- } catch { setErr("Network error."); } finally { setBusy(false); }
+ } catch (e) { setErr(e instanceof Error ? e.message : "Network error."); } finally { setBusy(false); }
  }
  async function redeem(e: React.FormEvent) {
  e.preventDefault(); setErr(""); setMsg("");
  if (!/^NEX-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(code.trim().toUpperCase())) return setErr("Enter the code exactly as issued (format NEX-XXXX-XXXX-XXXX).");
  setBusy(true);
  try {
- const res = await fetch("/api/redeem-code", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: code.trim().toUpperCase() }) });
- const data = await res.json();
- if (!res.ok) { setErr(data.error || "Redemption failed."); return; }
+ await studentPost<Record<string, unknown>>("/api/redeem-code", { code: code.trim().toUpperCase() });
  const next = loadProgress(); next.activated = true;
  pushNotification(next, "Your access code was redeemed. Your account is now activated.");
  saveProgress(next); setP(next);
  setMsg("Activation successful — welcome to Nexora Web Dev. Academy. Your lessons are now unlocked.");
- } catch { setErr("Network error."); } finally { setBusy(false); }
+ } catch (e) { setErr(e instanceof Error ? e.message : "Network error."); } finally { setBusy(false); }
  }
  return (
  <DashboardShell title="Payment & Activation">

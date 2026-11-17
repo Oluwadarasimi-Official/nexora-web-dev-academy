@@ -6,6 +6,7 @@ import DashboardShell from "@/components/DashboardShell";
 import { Card, Alert } from "@/components/ui";
 import { topicBySlug, publicQuestions } from "@/lib/curriculum";
 import { loadProgress, saveProgress, pushNotification } from "@/lib/store";
+import { studentPost } from "@/lib/studentClient";
 
 export default function QuizPage({ params }: { params: { slug: string } }) {
  const topic = topicBySlug(params.slug);
@@ -24,15 +25,13 @@ export default function QuizPage({ params }: { params: { slug: string } }) {
  if (!p.activated) return setErr("Your account is not activated yet. Quizzes are locked until activation.");
  setBusy(true);
  try {
- const res = await fetch("/api/quiz-submit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug: topic!.slug, answers }) });
- const data = await res.json();
- if (!res.ok) { setErr(data.error || "Quiz submission failed."); return; }
+ const data = await studentPost<{ score: number; passed: boolean; review: { q: string; correct: boolean; yourAnswer: string | null; correctAnswer: string; explanation: string }[] }>("/api/quiz-submit", { slug: topic!.slug, answers });
  setResult(data);
  const next = loadProgress();
  next.quizAttempts[topic!.slug] = { score: data.score, passed: data.passed, at: new Date().toISOString() };
  pushNotification(next, `Quiz ${data.passed ? "passed" : "submitted"}: ${topic!.title} — ${data.score}/10${data.passed ? ". You may now mark the topic complete." : ". You need 7/10 to pass — try again."}`);
  saveProgress(next);
- } catch { setErr("Network error. Try again."); }
+ } catch (e) { setErr(e instanceof Error ? e.message : "Network error. Try again."); }
  finally { setBusy(false); }
  }
  return (
