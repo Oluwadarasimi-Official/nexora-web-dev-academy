@@ -15,7 +15,7 @@ export default function QuizPage({ params }: { params: { slug: string } }) {
  // marking is server-side in /api/quiz-submit).
  const shuffled = useMemo(() => [...questions].sort(() => Math.random() - 0.5), [questions]);
  const [answers, setAnswers] = useState<Record<number, number>>({});
- const [result, setResult] = useState<{ score: number; passed: boolean; review: { q: string; correct: boolean; yourAnswer: string | null; correctAnswer: string; explanation: string }[] } | null>(null);
+ const [result, setResult] = useState<{ score: number; passed: boolean; persisted?: boolean; review: { q: string; correct: boolean; yourAnswer: string | null; correctAnswer: string; explanation: string }[] } | null>(null);
  const [err, setErr] = useState(""); const [busy, setBusy] = useState(false);
  if (!topic) return <DashboardShell title="Quiz not found"><p>That quiz does not exist.</p></DashboardShell>;
  const p = loadProgress();
@@ -25,11 +25,18 @@ export default function QuizPage({ params }: { params: { slug: string } }) {
  if (!p.activated) return setErr("Your account is not activated yet. Quizzes are locked until activation.");
  setBusy(true);
  try {
- const data = await studentPost<{ score: number; passed: boolean; review: { q: string; correct: boolean; yourAnswer: string | null; correctAnswer: string; explanation: string }[] }>("/api/quiz-submit", { slug: topic!.slug, answers });
+ const data = await studentPost<{ score: number; passed: boolean; persisted?: boolean; review: { q: string; correct: boolean; yourAnswer: string | null; correctAnswer: string; explanation: string }[] }>("/api/quiz-submit", { slug: topic!.slug, answers });
  setResult(data);
  const next = loadProgress();
  next.quizAttempts[topic!.slug] = { score: data.score, passed: data.passed, at: new Date().toISOString() };
+ // Honest copy: only promise "mark the topic complete" when the server
+ // actually saved the attempt. If it did not persist, the lesson page's
+ // "Mark Topic Complete" button will sync this result first.
+ if (data.persisted === false) {
+ pushNotification(next, `Quiz ${data.passed ? "passed" : "submitted"}: ${topic!.title} — ${data.score}/10. Your result was marked but could not be saved to the academy database — open the lesson page and tap "Mark Topic Complete" to save it.`);
+ } else {
  pushNotification(next, `Quiz ${data.passed ? "passed" : "submitted"}: ${topic!.title} — ${data.score}/10${data.passed ? ". You may now mark the topic complete." : ". You need 7/10 to pass — try again."}`);
+ }
  saveProgress(next);
  } catch (e) { setErr(e instanceof Error ? e.message : "Network error. Try again."); }
  finally { setBusy(false); }
@@ -42,6 +49,7 @@ export default function QuizPage({ params }: { params: { slug: string } }) {
  <Card className="mt-4">
  <h3 className="text-xl font-bold text-navy">Your result: {result.score}/10 — {result.passed ? (<>Passed <Check className="inline h-5 w-5" /></>) : "Not passed"}</h3>
  <p className="mt-2 text-sm text-slate-600">{result.passed ? "Well done. You can now mark this topic complete from the lesson page." : "You need at least 7 correct. Review the explanations below and try again."}</p>
+ {result.persisted === false && <p className="mt-2 text-sm font-semibold text-amber-700">Your result was marked but could not be saved to the academy database just now. Open the lesson page and tap “Mark Topic Complete” — it will save your result and complete the topic.</p>}
  <div className="mt-4 space-y-3">
  {result.review.map((r, i: number) => (
  <div key={i} className="card-soft rounded-2xl border border-slate-200 p-3 text-sm">

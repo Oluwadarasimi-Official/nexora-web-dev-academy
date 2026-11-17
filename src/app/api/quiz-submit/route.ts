@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { topicBySlug } from "@/lib/curriculum";
-import { getServerSupabase, isSupabaseConfigured } from "@/lib/supabase";
+import { getServerSupabase, isSupabaseConfigured, resolveTopicQuiz } from "@/lib/supabase";
 
 // POST /api/quiz-submit — SERVER-SIDE marking. The client only ever receives
 // questions without answers (publicQuestions); the keys live here.
@@ -28,11 +28,14 @@ export async function POST(req: Request) {
       if (client) {
         const { data: { user } } = await client.auth.getUser(token);
         if (user) {
-          const { data: quiz } = await client.from("quizzes").select("id").eq("topic_id", topic.id).maybeSingle();
+          // Resolve by slug: quizzes.topic_id is the topics UUID, not the
+          // curriculum id ("L1-T01"). The old eq(topic_id, topic.id) never
+          // matched, so no attempt was ever persisted.
+          const { quizId } = await resolveTopicQuiz(client, slug);
           // Quiz rows are seeded by supabase/seed-curriculum.sql; if absent,
           // the attempt is still returned honestly with persisted:false.
-          if (quiz) {
-            const { data: attempt, error } = await client.from("quiz_attempts").insert({ student_id: user.id, quiz_id: quiz.id, topic_slug: slug, score, passed }).select("id").single();
+          if (quizId) {
+            const { data: attempt, error } = await client.from("quiz_attempts").insert({ student_id: user.id, quiz_id: quizId, topic_slug: slug, score, passed }).select("id").single();
             if (!error && attempt) persisted = true;
           }
         }

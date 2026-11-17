@@ -35,6 +35,13 @@ export default function DashboardShell({ children, title }: { children: React.Re
  const { session, ready } = useStudent();
  const [progress, setProgress] = useState(loadProgress());
  useEffect(() => { setProgress(loadProgress()); }, [pathname]);
+ // Progress can change without a navigation (code redeem, quiz submit,
+ // topic completion all saveProgress in place) — re-read when it does.
+ useEffect(() => {
+ const refresh = () => setProgress(loadProgress());
+ window.addEventListener("nexora-progress", refresh);
+ return () => window.removeEventListener("nexora-progress", refresh);
+ }, []);
  if (!ready) return <div className="mx-auto max-w-6xl px-4 py-10 text-slate-600">Loading your dashboard…</div>;
  if (!session) {
  return (

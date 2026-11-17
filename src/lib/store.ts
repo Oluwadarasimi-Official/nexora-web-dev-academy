@@ -34,6 +34,11 @@ export function loadProgress(): LocalProgress {
 export function saveProgress(p: LocalProgress) {
   if (typeof window === "undefined") return;
   localStorage.setItem(KEY, JSON.stringify(p));
+  // Tell every mounted shell/page that progress changed, so header badges
+  // (e.g. "Activated" after a code redeem) refresh without a navigation.
+  // DashboardShell listens for this; without it the badge kept showing the
+  // pre-redeem state until the next page change.
+  window.dispatchEvent(new Event("nexora-progress"));
 }
 export function lagosDate(d = new Date()): string {
   return new Intl.DateTimeFormat("en-CA", {

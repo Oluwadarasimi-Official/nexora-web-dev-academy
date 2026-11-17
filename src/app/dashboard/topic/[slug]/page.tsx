@@ -31,6 +31,11 @@ export default function TopicPage({ params }: { params: { slug: string } }) {
  if (!quiz?.passed) return setErr("Complete this topic's quiz first and score at least 7/10. A passed quiz is required before a topic can be marked complete.");
  setBusy(true);
  try {
+ // Repair: a pass earned before the server started persisting quiz
+ // attempts lives only on this device. Sync it to the academy database
+ // first, so the server gate in /api/complete-topic can see it. The sync
+ // is idempotent — if the pass is already recorded, nothing is inserted.
+ await studentPost<{ synced?: boolean; alreadyRecorded?: boolean }>("/api/quiz-sync", { slug: topicSlug, score: quiz.score });
  const data = await studentPost<{ persisted?: boolean }>("/api/complete-topic", { slug: topicSlug, level: topicLevel, isNew, lagosDate: today });
  const next = loadProgress();
  if (!next.completedTopics.includes(topicSlug)) next.completedTopics.push(topicSlug);
