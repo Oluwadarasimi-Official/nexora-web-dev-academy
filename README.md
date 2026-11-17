@@ -2,7 +2,7 @@
 
 A production-ready online learning platform: public website, student learning portal, administrator portal, payments and single-use access codes, a complete 3-level curriculum, examinations, and three level-specific certificates.
 
-- **Live target:** https://nexorawebdevacademy.vercel.app (deploy from this repo; not live until the parent deploys it)
+- **Live target:** https://nexdevacad.vercel.app (deploy from this repo; not live until the parent deploys it)
 - **Stack:** Next.js 14 (App Router), React, TypeScript, Tailwind CSS, Supabase Auth + PostgreSQL + RLS, Vercel
 - **Academy authorities:** Official Darax & Official Obafemix
 - **Payment contact:** +234 813 938 8562 (WhatsApp — payment happens outside the platform)

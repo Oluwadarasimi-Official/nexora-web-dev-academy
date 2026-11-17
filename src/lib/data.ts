@@ -4,7 +4,7 @@ export const WHATSAPP_NUMBER = "+2348139388562";
 export const WHATSAPP_LINK =
   "https://wa.me/2348139388562?text=" +
   encodeURIComponent("Hello Nexora Web Dev. Academy, I would like to enrol and confirm payment.");
-export const SITE_URL = "https://nexorawebdevacademy.vercel.app";
+export const SITE_URL = "https://nexdevacad.vercel.app";
 export const SUPABASE_URL = "https://fodwlmprqreheqiskowy.supabase.co";
 export const DAILY_LIMIT = 3;
 export const PASS_MARK = 7;

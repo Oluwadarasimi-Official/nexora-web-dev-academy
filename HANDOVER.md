@@ -1,15 +1,15 @@
 # Nexora Web Dev. Academy — Handover
 
 **Date:** 17 November 2026
-**Target live URL:** https://nexorawebdevacademy.vercel.app — **LIVE and verified 17 Nov 2026 evening (see status below).**
-**Student portal:** https://nexorawebdevacademy.vercel.app/dashboard
-**Admin portal:** https://nexorawebdevacademy.vercel.app/admin (never linked from public or student pages)
+**Target live URL:** https://nexdevacad.vercel.app — **LIVE and verified 17 Nov 2026 evening (see status below).**
+**Student portal:** https://nexdevacad.vercel.app/dashboard
+**Admin portal:** https://nexdevacad.vercel.app/admin (never linked from public or student pages)
 **Repo:** https://github.com/Oluwadarasimi-Official/nexora-web-dev-academy (public, created + pushed 17 Nov 2026)
 
 ## Deployment status — 17 November 2026 evening (FINAL, verified live)
 
 - **GitHub: DONE.** Repo: https://github.com/Oluwadarasimi-Official/nexora-web-dev-academy — master at `4645129` (admin live-data wiring). Pushes to master auto-deploy via Vercel.
-- **Vercel: LIVE.** https://nexorawebdevacademy.vercel.app serves UI v4 (real light glassmorphism on the standard champagne-gold + sky-blue layout, circular cropped logo top-left only, FAQ in the sliding sidebar). Home, curriculum, login, register, verify-certificate, admin, how-it-works, certificates all 200; logo-circle.png 200. Project `prj_X9omZ9VpKIN8tx3tNt9xtOII3p17`, team Tech Nova Academy. Env vars set (Production): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `ADMIN_SETUP_TOKEN` (secret — value held by the owner only, never in this repo). SSO/deployment protection disabled; framework `nextjs`; GitHub auto-deploy linked (branch master).
+- **Vercel: LIVE.** https://nexdevacad.vercel.app serves UI v4 (real light glassmorphism on the standard champagne-gold + sky-blue layout, circular cropped logo top-left only, FAQ in the sliding sidebar). Home, curriculum, login, register, verify-certificate, admin, how-it-works, certificates all 200; logo-circle.png 200. Project `prj_X9omZ9VpKIN8tx3tNt9xtOII3p17`, team Tech Nova Academy. Env vars set (Production): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `ADMIN_SETUP_TOKEN` (secret — value held by the owner only, never in this repo). SSO/deployment protection disabled; framework `nextjs`; GitHub auto-deploy linked (branch master).
 - **Supabase: CONNECTED — all migrations applied live in the dashboard SQL Editor 17 Nov 2026 evening (owner-approved).** Project `fodwlmprqreheqiskowy.supabase.co`. Applied in order: `000_drop_legacy_schema.sql` (dropped the 15 legacy tables from an earlier incompatible build — owner-approved wipe), `001_schema.sql`, `003_replace_access_codes.sql` (fresh batch-2 codes, hashes only), seed chunks `seed-01`–`seed-07` (statement-safe regeneration; the original byte-split chunks could not run standalone), `004_admin_access_and_signup_trigger.sql` (admin RLS policies + grants + correct signup trigger). Migration `002_seed_access_codes.sql` was NEVER run — superseded by 003, do not run it. Final verification (SQL Editor + independent REST probe): topics **73**, quiz questions **730**, examinations **3**, unused access codes **30**, redemptions **0**, admin policies **23**, admin accounts **1**. Two defects found and fixed during the run: a leftover old-build trigger `handle_new_academy_user()` that broke registration (now correct in 004), and the seed chunks splitting mid-statement (regenerated dollar-quote-aware).
 - **Admin: SINGLE login, created and verified live.** davidoluwadarasimi011@gmail.com — registered at /register, promoted to admin, signed in at /login and opened /admin with no error. Exactly 1 profile, 1 admin. The admin portal is wired to live data (all 10 pages read the real tables via session-token API routes + `requireAdmin` guard + migration 004 policies); verified live signed-in: dashboard shows Registered Students 1, Activated 0, Pending Payments 0, Codes Total 30 / Unused 30 / Redeemed 0, Certificates 0; students page lists the 1 student; payments 0; codes list 30 unused; sidebar FAQ expands. `/api/admin/setup` now requires a signed-in admin + the token (the old anon-key lookup always failed under RLS).
 - **Certificate verification API: PROVEN LIVE 17 Nov evening.** `POST /api/verify-certificate` with an unknown ID returns `{"valid":false,"status":"not_found"}` HTTP 200.
@@ -23,7 +23,7 @@
 ## Deployment steps for the parent
 
 1. Create the GitHub repo (e.g. `Oluwadarasimi-Official/nexora-web-dev-academy`) and push this directory.
-2. In Vercel, create/import the project from that repo; verify the `nexorawebdevacademy.vercel.app` domain is available and owned by the right team.
+2. In Vercel, create/import the project from that repo; verify the `nexdevacad.vercel.app` domain is available and owned by the right team.
 3. Set the three env vars above in Vercel (Production).
 4. In Supabase, verify the target project (`fodwlmprqreheqiskowy.supabase.co`), then apply in order: `000_drop_legacy_schema.sql` (only if legacy tables from an earlier build block 001), `001_schema.sql`, `003_replace_access_codes.sql`, seed chunks `seed-01`–`seed-07`, `004_admin_access_and_signup_trigger.sql`. NEVER run `002_seed_access_codes.sql` (superseded by 003). Verify with the count queries at the end of each file (topics 73, quiz questions 730, examinations 3, access codes 30 unused, admin policies 23, admin accounts 1).
 5. In Supabase Auth, set the site URL to the production domain and add the production + local redirect URLs. (Email confirmation behaviour: the owner admin signed in with no confirmation step on 17 Nov 2026.)

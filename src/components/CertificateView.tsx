@@ -21,7 +21,7 @@ export default function CertificateView({ cert }: { cert: CertData }) {
  <div><p className="text-xs uppercase tracking-widest text-slate-500">Academy Authority</p><p className="font-bold text-navy"><VerifiedName name={AUTHORITIES[1]} /></p></div>
  </div>
  {cert.status === "revoked" && <p className="mt-6 font-bold text-red-700">This certificate has been REVOKED.</p>}
- <p className="mt-6 text-xs text-slate-500">Verify this certificate at nexorawebdevacademy.vercel.app/verify-certificate using the certificate ID above.</p>
+ <p className="mt-6 text-xs text-slate-500">Verify this certificate at nexdevacad.vercel.app/verify-certificate using the certificate ID above.</p>
  </div>
  );
 }
