@@ -9,7 +9,7 @@ export default function Page() {
  ["Activated students", "—", "Profiles with activated = true."],
  ["Pending payments", "—", "Payments with status = pending."],
  ["Unactivated students", "—", "Registered minus activated."],
- ["Access codes — total", "30", "Initial allocation (migration 002)."],
+ ["Access codes — total", "30", "Initial allocation (migration 003, fresh batch 2)."],
  ["Access codes — redeemed", "—", "From code_redemptions."],
  ["Access codes — unused", "—", "30 minus redeemed/assigned/revoked."],
  ["Certificates issued", "—", "Valid certificates in the certificates table."],
@@ -17,7 +17,7 @@ export default function Page() {
  <Card key={label}><p className="text-xs uppercase tracking-widest text-slate-500">{label}</p><p className="mt-1 text-2xl font-bold text-navy">{value}</p><p className="text-xs text-slate-500">{note}</p></Card>
  ))}
 </div>
-<div className="mt-4"><Alert kind="info">To see live numbers: apply supabase/migrations/001_schema.sql and 002_seed_access_codes.sql to the Supabase project, set the env vars in Vercel, and complete the admin bootstrap at /admin/setup. The dashboard then reads the real tables. Until then, “—” means “not yet connected”, not zero.</Alert></div>
+<div className="mt-4"><Alert kind="info">To see live numbers: apply the migrations in supabase/migrations/ (000, 001, 003) and the seed chunks to the Supabase project, set the env vars in Vercel, and complete the admin bootstrap at /admin/setup. The dashboard then reads the real tables. Until then, “—” means “not yet connected”, not zero.</Alert></div>
 <div className="mt-4 grid gap-4 md:grid-cols-2">
  <Card><h3 className="font-bold text-navy">Learning activity</h3><p className="mt-2 text-sm text-slate-600">Completed levels, quiz and examination attempts are recorded in lesson_progress, quiz_attempts and examination_attempts. Review them per student under Students.</p></Card>
  <Card><h3 className="font-bold text-navy">What to do first</h3><p className="mt-2 text-sm text-slate-600">1. Apply the migrations. 2. Bootstrap the first admin at /admin/setup. 3. Review pending payments. 4. Assign codes only after approval. 5. Check the audit log after every privileged action.</p></Card>
