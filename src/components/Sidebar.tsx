@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 
 /**
@@ -27,6 +28,8 @@ export function SidebarMenu({
   activeHref?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
@@ -34,19 +37,11 @@ export function SidebarMenu({
     document.body.style.overflow = "hidden";
     return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
   }, [open ]);
-  return (
+  // The drawer + backdrop are portalled to <body>: a backdrop-filtered
+  // ancestor (the glass header) would otherwise become the containing
+  // block for the fixed drawer and shrink it to the header's height.
+  const drawer = (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label={`Open ${title} menu`}
-        aria-expanded={open}
-        className="glass-chip inline-flex h-10 w-10 shrink-0 flex-col items-center justify-center gap-[5px] rounded-full transition hover:border-amber-300/60"
-      >
-        <span className="block h-[2px] w-5 rounded bg-white" />
-        <span className="block h-[2px] w-5 rounded bg-amber-300" />
-        <span className="block h-[2px] w-5 rounded bg-white" />
-      </button>
       <div className={`drawer-backdrop fixed inset-0 z-50 bg-black/60 backdrop-blur-sm ${open ? "opacity-100" : "pointer-events-none opacity-0"}`} onClick={() => setOpen(false)} aria-hidden="true" />
       <aside
         role="dialog"
@@ -77,6 +72,22 @@ export function SidebarMenu({
         </nav>
         {extra && <div className="border-t border-white/10 px-5 py-4">{extra}</div>}
       </aside>
+    </>
+  );
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label={`Open ${title} menu`}
+        aria-expanded={open}
+        className="glass-chip inline-flex h-10 w-10 shrink-0 flex-col items-center justify-center gap-[5px] rounded-full transition hover:border-amber-300/60"
+      >
+        <span className="block h-[2px] w-5 rounded bg-white" />
+        <span className="block h-[2px] w-5 rounded bg-amber-300" />
+        <span className="block h-[2px] w-5 rounded bg-white" />
+      </button>
+      {mounted && createPortal(drawer, document.body)}
     </>
   );
 }
