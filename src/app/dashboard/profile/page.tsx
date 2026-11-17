@@ -2,10 +2,10 @@
 import { useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import { Card, Alert } from "@/components/ui";
-import { loadSession, saveSession, loadProgress } from "@/lib/store";
+import { loadSession, saveSession, useSyncedProgress } from "@/lib/store";
 export default function Profile() {
  const session = loadSession();
- const p = loadProgress();
+ const p = useSyncedProgress();
  const [name, setName] = useState(session?.name || "");
  const [msg, setMsg] = useState("");
  function save() {

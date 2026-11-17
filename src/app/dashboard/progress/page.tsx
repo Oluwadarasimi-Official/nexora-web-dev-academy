@@ -3,9 +3,9 @@ import { Check } from "lucide-react";
 import DashboardShell from "@/components/DashboardShell";
 import { Card } from "@/components/ui";
 import { TOPICS, LEVELS } from "@/lib/curriculum";
-import { loadProgress } from "@/lib/store";
+import { useSyncedProgress } from "@/lib/store";
 export default function Progress() {
- const p = loadProgress();
+ const p = useSyncedProgress();
  return (
  <DashboardShell title="My Progress">
  <div className="space-y-4">

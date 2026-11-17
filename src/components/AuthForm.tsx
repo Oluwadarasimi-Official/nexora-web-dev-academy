@@ -90,7 +90,11 @@ export async function supabaseSignOut() {
  const sb = getBrowserSupabase();
  if (sb) { try { await sb.auth.signOut(); } catch {} }
  saveSession(null);
- localStorage.removeItem("nexora-progress-v1");
+ // NOTE (B3 fix): do NOT delete the local progress here. Progress lives
+ // in the academy database and is re-hydrated from GET /api/progress on
+ // the next sign-in; wiping it on logout destroyed a student's record on
+ // that device with no way back (a fresh sign-in used to show "Not yet
+ // activated, 0 progress" even though the server had them activated).
 }
 export function localRegisterAccount(name: string, email: string, password: string) {
  const raw = localStorage.getItem("nexora-accounts");

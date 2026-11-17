@@ -4,11 +4,11 @@ import { useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import { Card, Alert } from "@/components/ui";
 import { WHATSAPP_LINK, WHATSAPP_NUMBER } from "@/lib/data";
-import { loadProgress, saveProgress, pushNotification } from "@/lib/store";
+import { loadProgress, saveProgress, pushNotification, useSyncedProgress } from "@/lib/store";
 import { studentPost } from "@/lib/studentClient";
 
 export default function Payment() {
- const [p, setP] = useState(loadProgress());
+ const p = useSyncedProgress();
  const [code, setCode] = useState("");
  const [msg, setMsg] = useState(""); const [err, setErr] = useState(""); const [busy, setBusy] = useState(false);
  async function redeem(e: React.FormEvent) {
@@ -19,7 +19,9 @@ export default function Payment() {
  await studentPost<Record<string, unknown>>("/api/redeem-code", { code: code.trim().toUpperCase() });
  const next = loadProgress(); next.activated = true;
  pushNotification(next, "Your access code was redeemed. Your account is now activated.");
- saveProgress(next); setP(next);
+ // saveProgress dispatches "nexora-progress", so the synced hook above
+ // (and the shell's header badge) refresh without a navigation.
+ saveProgress(next);
  setMsg("Activation successful — welcome to Nexora Web Dev. Academy. Your lessons are now unlocked.");
  } catch (e) { setErr(e instanceof Error ? e.message : "Network error."); } finally { setBusy(false); }
  }

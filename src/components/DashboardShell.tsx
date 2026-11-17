@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { loadSession, loadProgress, type LocalSession } from "@/lib/store";
+import { loadSession, loadProgress, hydrateProgressFromServer, type LocalSession } from "@/lib/store";
 import { supabaseSignOut } from "@/components/AuthForm";
 import { SidebarMenu } from "@/components/Sidebar";
 import { WHATSAPP_LINK, WHATSAPP_NUMBER } from "@/lib/data";
@@ -16,7 +16,7 @@ const PRIMARY = [
 ];
 const SECONDARY: [string, string][] = [
  ["My Progress", "/dashboard/progress"],
- ["Quizzes", "/dashboard/courses"],
+ ["Quizzes", "/dashboard/quizzes"],
  ["My Certificates", "/dashboard/certificates"],
  ["Payment & Activation", "/dashboard/payment"],
  ["Profile", "/dashboard/profile"],
@@ -35,6 +35,11 @@ export default function DashboardShell({ children, title }: { children: React.Re
  const { session, ready } = useStudent();
  const [progress, setProgress] = useState(loadProgress());
  useEffect(() => { setProgress(loadProgress()); }, [pathname]);
+ // B3 fix: read progress back from the academy database on mount, so a
+ // new device or a cleared browser shows the real server state (activated,
+ // completed topics, quiz passes) instead of an empty local copy. Silent
+ // on failure — local progress stays as it is.
+ useEffect(() => { hydrateProgressFromServer(); }, []);
  // Progress can change without a navigation (code redeem, quiz submit,
  // topic completion all saveProgress in place) — re-read when it does.
  useEffect(() => {
@@ -72,7 +77,7 @@ export default function DashboardShell({ children, title }: { children: React.Re
  <div className="mt-2 flex flex-wrap items-center gap-1.5">
  <span className="chip rounded-full px-2.5 py-1 text-xs font-medium">{session.email}</span>
  <span className="chip rounded-full px-2.5 py-1 text-xs font-medium">Current level: {levelName}</span>
- <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${progress.activated ? "bg-gold/15 text-gold-dark ring-1 ring-gold/50" : "bg-gold/15 text-gold-dark ring-1 ring-gold/50"}`}>{progress.activated ? "Activated" : "Not yet activated"}</span>
+ <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${progress.activated ? "bg-gold/15 text-gold-dark ring-1 ring-gold/50" : "bg-amber-100 text-amber-800 ring-1 ring-amber-300"}`}>{progress.activated ? "Activated" : "Not yet activated"}</span>
  </div>
  </div>
  <div className="flex shrink-0 items-center gap-2">

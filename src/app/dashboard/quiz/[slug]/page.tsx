@@ -1,11 +1,11 @@
 "use client";
-import { Check, X } from "lucide-react";
+import { Check, Lock, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import DashboardShell from "@/components/DashboardShell";
 import { Card, Alert } from "@/components/ui";
-import { topicBySlug, publicQuestions } from "@/lib/curriculum";
-import { loadProgress, saveProgress, pushNotification } from "@/lib/store";
+import { topicBySlug, publicQuestions, levelUnlocked } from "@/lib/curriculum";
+import { loadProgress, saveProgress, pushNotification, useSyncedProgress } from "@/lib/store";
 import { studentPost } from "@/lib/studentClient";
 
 export default function QuizPage({ params }: { params: { slug: string } }) {
@@ -17,12 +17,19 @@ export default function QuizPage({ params }: { params: { slug: string } }) {
  const [answers, setAnswers] = useState<Record<number, number>>({});
  const [result, setResult] = useState<{ score: number; passed: boolean; persisted?: boolean; review: { q: string; correct: boolean; yourAnswer: string | null; correctAnswer: string; explanation: string }[] } | null>(null);
  const [err, setErr] = useState(""); const [busy, setBusy] = useState(false);
+ // Hook must run before the early return below (rules of hooks).
+ const p = useSyncedProgress();
  if (!topic) return <DashboardShell title="Quiz not found"><p>That quiz does not exist.</p></DashboardShell>;
- const p = loadProgress();
+ // B15: a quiz is locked until the account is activated AND its level is
+ // unlocked — previously the quiz page checked activation only, so a
+ // student could take a Level 3 quiz before finishing Level 1.
+ const levelOpen = levelUnlocked(topic.level, p.completedTopics.length);
+ const locked = !p.activated || !levelOpen;
  async function submit(e: React.FormEvent) {
  e.preventDefault(); setErr("");
  if (Object.keys(answers).length < 10) return setErr("Answer all 10 questions before submitting.");
  if (!p.activated) return setErr("Your account is not activated yet. Quizzes are locked until activation.");
+ if (!levelOpen) return setErr(`This level is locked. Complete Level ${topic!.level - 1} first.`);
  setBusy(true);
  try {
  const data = await studentPost<{ score: number; passed: boolean; persisted?: boolean; review: { q: string; correct: boolean; yourAnswer: string | null; correctAnswer: string; explanation: string }[] }>("/api/quiz-submit", { slug: topic!.slug, answers });
@@ -31,9 +38,10 @@ export default function QuizPage({ params }: { params: { slug: string } }) {
  next.quizAttempts[topic!.slug] = { score: data.score, passed: data.passed, at: new Date().toISOString() };
  // Honest copy: only promise "mark the topic complete" when the server
  // actually saved the attempt. If it did not persist, the lesson page's
- // "Mark Topic Complete" button will sync this result first.
+ // "Mark Topic Complete" will not see the pass — submit the quiz again
+ // (the server is the authority; there is no local-only repair path).
  if (data.persisted === false) {
- pushNotification(next, `Quiz ${data.passed ? "passed" : "submitted"}: ${topic!.title} — ${data.score}/10. Your result was marked but could not be saved to the academy database — open the lesson page and tap "Mark Topic Complete" to save it.`);
+ pushNotification(next, `Quiz ${data.passed ? "passed" : "submitted"}: ${topic!.title} — ${data.score}/10. Your result was marked but could not be saved to the academy database — submit the quiz again to save it.`);
  } else {
  pushNotification(next, `Quiz ${data.passed ? "passed" : "submitted"}: ${topic!.title} — ${data.score}/10${data.passed ? ". You may now mark the topic complete." : ". You need 7/10 to pass — try again."}`);
  }
@@ -44,12 +52,17 @@ export default function QuizPage({ params }: { params: { slug: string } }) {
  return (
  <DashboardShell title={`Quiz — ${topic.title}`}>
  <p className="text-sm text-slate-600">10 multiple-choice questions · Pass mark 7/10 (70%) · Questions are marked on the server. Answer keys are not sent to your browser before submission.</p>
- {!p.activated && <div className="mt-4"><Alert kind="error">Quizzes are locked until your account is activated.</Alert></div>}
- {result ? (
+ {locked && !result ? (
+ <Card className="mt-4">
+ <h3 className="font-bold text-navy"><Lock className="inline h-5 w-5 text-amber-700" /> This quiz is locked</h3>
+ <p className="mt-2 text-sm leading-relaxed text-slate-700">{!p.activated ? "Your account is not activated yet. Pay on WhatsApp, get your access code from the owner, and redeem it to unlock this quiz." : `This level is locked. Complete Level ${topic.level - 1} (all topics and quizzes) first.`}</p>
+ {!p.activated && <Link href="/dashboard/payment" className="mt-4 inline-block btn-gold px-4 py-2 text-sm font-semibold">Go to Payment &amp; Activation</Link>}
+ </Card>
+ ) : result ? (
  <Card className="mt-4">
  <h3 className="text-xl font-bold text-navy">Your result: {result.score}/10 — {result.passed ? (<>Passed <Check className="inline h-5 w-5" /></>) : "Not passed"}</h3>
  <p className="mt-2 text-sm text-slate-600">{result.passed ? "Well done. You can now mark this topic complete from the lesson page." : "You need at least 7 correct. Review the explanations below and try again."}</p>
- {result.persisted === false && <p className="mt-2 text-sm font-semibold text-amber-700">Your result was marked but could not be saved to the academy database just now. Open the lesson page and tap “Mark Topic Complete” — it will save your result and complete the topic.</p>}
+ {result.persisted === false && <p className="mt-2 text-sm font-semibold text-amber-700">Your result was marked but could not be saved to the academy database just now. Submit the quiz again to save it — the lesson page can only mark the topic complete once the server has your pass.</p>}
  <div className="mt-4 space-y-3">
  {result.review.map((r, i: number) => (
  <div key={i} className="card-soft rounded-2xl border border-slate-200 p-3 text-sm">

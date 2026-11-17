@@ -1,13 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import { Card } from "@/components/ui";
 import { TOPICS, LEVELS, DAILY_NEW_TOPIC_LIMIT } from "@/lib/curriculum";
-import { loadProgress, lagosDate, type LocalProgress } from "@/lib/store";
+import { useSyncedProgress, lagosDate } from "@/lib/store";
 
 export default function Dashboard() {
- const [p, setP] = useState<LocalProgress>(loadProgress());
- useEffect(() => { setP(loadProgress()); }, []);
+ const p = useSyncedProgress();
  const completed = p.completedTopics.length;
  const level = completed >= 51 ? 3 : completed >= 26 ? 2 : 1;
  const today = lagosDate();

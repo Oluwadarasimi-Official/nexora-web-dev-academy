@@ -1,26 +1,28 @@
 "use client";
-import { Check } from "lucide-react";
+import { Check, Lock } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import DashboardShell from "@/components/DashboardShell";
 import { Card, Alert } from "@/components/ui";
-import { topicBySlug, topicsForLevel } from "@/lib/curriculum";
-import { loadProgress, saveProgress, lagosDate, pushNotification } from "@/lib/store";
+import { topicBySlug, topicsForLevel, levelUnlocked } from "@/lib/curriculum";
+import { loadProgress, saveProgress, lagosDate, pushNotification, useSyncedProgress } from "@/lib/store";
 import { studentPost } from "@/lib/studentClient";
 
 export default function TopicPage({ params }: { params: { slug: string } }) {
  const topic = topicBySlug(params.slug);
  const [msg, setMsg] = useState(""); const [err, setErr] = useState("");
  const [busy, setBusy] = useState(false);
+ // Hook must run before the early return below (rules of hooks).
+ const p = useSyncedProgress();
  if (!topic) return <DashboardShell title="Topic not found"><p className="text-slate-600">That topic does not exist. Return to <Link className="text-sky" href="/dashboard/courses">My Courses</Link>.</p></DashboardShell>;
- const p = loadProgress();
  const done = p.completedTopics.includes(topic.slug);
  const isNew = !done;
  const today = lagosDate();
  const remaining = Math.max(0, 3 - (p.daily[today] || 0));
  const levelDone = topicsForLevel(topic.level).filter((t) => p.completedTopics.includes(t.slug)).length;
  const levelTotal = topicsForLevel(topic.level).length;
- const unlocked = topic.level === 1 || (topic.level === 2 && p.completedTopics.length >= 26) || (topic.level === 3 && p.completedTopics.length >= 51);
+ const unlocked = levelUnlocked(topic.level, p.completedTopics.length);
+ const locked = !p.activated || !unlocked;
 
  const topicSlug = topic.slug; const topicLevel = topic.level; const topicTitle = topic.title;
  async function completeTopic() {
@@ -31,11 +33,11 @@ export default function TopicPage({ params }: { params: { slug: string } }) {
  if (!quiz?.passed) return setErr("Complete this topic's quiz first and score at least 7/10. A passed quiz is required before a topic can be marked complete.");
  setBusy(true);
  try {
- // Repair: a pass earned before the server started persisting quiz
- // attempts lives only on this device. Sync it to the academy database
- // first, so the server gate in /api/complete-topic can see it. The sync
- // is idempotent — if the pass is already recorded, nothing is inserted.
- await studentPost<{ synced?: boolean; alreadyRecorded?: boolean }>("/api/quiz-sync", { slug: topicSlug, score: quiz.score });
+ // No client-score sync step any more: the old repair endpoint that
+ // trusted client-asserted scores was deleted. The server's
+ // complete-topic gate reads the persisted quiz_attempts table directly,
+ // and quiz-submit persists the attempt when the quiz is marked — a
+ // passed quiz is already on the server by the time the student gets here.
  const data = await studentPost<{ persisted?: boolean }>("/api/complete-topic", { slug: topicSlug, level: topicLevel, isNew, lagosDate: today });
  const next = loadProgress();
  if (!next.completedTopics.includes(topicSlug)) next.completedTopics.push(topicSlug);
@@ -50,7 +52,13 @@ export default function TopicPage({ params }: { params: { slug: string } }) {
  return (
  <DashboardShell title={topic.title}>
  <p className="text-sm text-slate-600">Level {topic.level} · {topic.module} · {done ? (<>Completed <Check className="inline h-4 w-4 text-sky-600" /></>) : "Not yet completed"} · Level progress: {levelDone}/{levelTotal}</p>
- {!p.activated && <div className="mt-4"><Alert kind="error">Lesson content is shown for reference only while unactivated — quizzes, examinations and topic completion are locked until activation.</Alert></div>}
+ {locked ? (
+ <Card className="mt-4">
+ <h3 className="font-bold text-navy"><Lock className="inline h-5 w-5 text-amber-700" /> This lesson is locked</h3>
+ <p className="mt-2 text-sm leading-relaxed text-slate-700">{!p.activated ? "Your account is not activated yet. Pay on WhatsApp, get your access code from the owner, and redeem it to unlock this lesson and its quiz." : `This level is locked. Complete Level ${topic.level - 1} (all topics and quizzes) first.`}</p>
+ {!p.activated && <Link href="/dashboard/payment" className="mt-4 inline-block btn-gold px-4 py-2 text-sm font-semibold">Go to Payment &amp; Activation</Link>}
+ </Card>
+ ) : (
  <div className="mt-4 space-y-5">
  <Card>
  <h3 className="font-bold text-navy">Learning objectives</h3>
@@ -85,6 +93,7 @@ export default function TopicPage({ params }: { params: { slug: string } }) {
  </div>
  <p className="text-sm text-slate-500">Today&apos;s new-topic allowance: {remaining} left (Africa/Lagos, {today}). Completing a new topic uses one allowance; revising a completed topic uses none. The limit is enforced server-side in /api/complete-topic.</p>
  </div>
+ )}
  </DashboardShell>
  );
 }

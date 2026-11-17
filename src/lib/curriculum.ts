@@ -11096,6 +11096,16 @@ export const DAILY_NEW_TOPIC_LIMIT = 3;
 export const ACADEMY_TIMEZONE = "Africa/Lagos";
 export function topicBySlug(slug: string) { return TOPICS.find((t) => t.slug === slug); }
 export function topicsForLevel(level: number) { return TOPICS.filter((t) => t.level === level); }
+// Single source of truth for level progression, used by the courses,
+// level, topic and quiz pages (and the "Quizzes" list). Level 1 is always
+// open; a higher level opens only once every topic in ALL lower levels is
+// complete (26 for Level 2, 51 for Level 3). Derived from the curriculum
+// data, never hardcoded counts, so it stays correct if topics are added.
+export function levelUnlocked(level: number, completedCount: number): boolean {
+  if (level <= 1) return true;
+  const needed = TOPICS.filter((t) => t.level < level).length;
+  return completedCount >= needed;
+}
 export function publicQuestions(topic: Topic) {
   // Strip answer keys before sending questions to a student.
   return topic.questions.map((q, i) => ({ index: i, q: q.q, options: q.options }));
