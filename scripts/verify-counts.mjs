@@ -58,6 +58,7 @@ const routes = [
   "supabase/migrations/007_exam_persistence.sql",
   "supabase/migrations/008_student_read_settings.sql",
   "supabase/migrations/009_lesson_views.sql",
+  "supabase/migrations/010_public_verify_certificates.sql",
 ];
 let missing = routes.filter((r) => !fs.existsSync(path.join(root, r)));
 console.log(`routes/files checked: ${routes.length}, missing: ${missing.length}`);
